@@ -93,6 +93,47 @@
       margin-top: 14px;
     }
 
+    .match-status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .match-status-card {
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .match-status-card.active {
+      outline: 2px solid var(--gold);
+    }
+
+    .match-status-name {
+      font-weight: 1000;
+      margin-bottom: 4px;
+    }
+
+    .match-status-text {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .match-status-card.red {
+      border-left: 5px solid var(--red);
+    }
+
+    .match-status-card.blue {
+      border-left: 5px solid var(--blue);
+    }
+
+    .match-status-card.tie {
+      border-left: 5px solid var(--gold);
+    }
+
     button {
       border: 0;
       border-radius: 18px;
@@ -386,7 +427,7 @@
     }
 
     function renderHoleScorer(matchData) {
-      const { tournament, match } = matchData;
+      const { tournament, match, matchId } = matchData;
       const holeData = match.holes?.[currentHole] || {};
       const redScore = holeData.redScore || 4;
       const blueScore = holeData.blueScore || 4;
@@ -394,6 +435,8 @@
       const tournamentLead = getTournamentMatchLead(tournament);
 
       content.innerHTML = `
+        ${renderMatchStatusCards(tournament, matchId)}
+
         <div class="card">
           <div class="winner-bar ${tournamentLead.className}">
             ${tournamentLead.text}
@@ -445,6 +488,79 @@
           <button class="gray-btn" style="width:100%; margin-top:10px;" onclick="backToMatches()">Back to Match List</button>
         </div>
       `;
+    }
+
+    function renderMatchStatusCards(tournament, activeMatchId) {
+      const matches = Object.entries(tournament.matches || {});
+
+      if (!matches.length) return "";
+
+      return `
+        <div class="match-status-grid">
+          ${matches.map(([matchId, match]) => {
+            const status = getMatchStatus(match);
+            const activeClass = matchId === activeMatchId ? "active" : "";
+
+            return `
+              <div class="match-status-card ${status.className} ${activeClass}">
+                <div class="match-status-name">${escapeHtml(match.name || "Match")}</div>
+                <div class="match-status-text">${escapeHtml(status.text)}</div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function getMatchStatus(match) {
+      let redHoles = 0;
+      let blueHoles = 0;
+      let scored = 0;
+
+      for (let i = 1; i <= 18; i++) {
+        const hole = match.holes?.[i] || {};
+        const red = Number(hole.redScore || 0);
+        const blue = Number(hole.blueScore || 0);
+
+        if (!red || !blue) continue;
+
+        scored++;
+
+        if (red < blue) redHoles++;
+        if (blue < red) blueHoles++;
+      }
+
+      const remaining = 18 - scored;
+      const lead = Math.abs(redHoles - blueHoles);
+
+      if (!scored) {
+        return {
+          className: "tie",
+          text: "Not started"
+        };
+      }
+
+      if (lead === 0) {
+        return {
+          className: "tie",
+          text: remaining > 0 ? `All square with ${remaining} holes to go` : "Match tied"
+        };
+      }
+
+      const leader = redHoles > blueHoles ? "Red" : "Blue";
+      const className = redHoles > blueHoles ? "red" : "blue";
+
+      if (lead > remaining) {
+        return {
+          className,
+          text: remaining === 0 ? `${leader} wins ${lead} up` : `${leader} wins ${lead} and ${remaining}`
+        };
+      }
+
+      return {
+        className,
+        text: `${leader} ${lead} up with ${remaining} holes to go`
+      };
     }
 
     function getTournamentMatchLead(tournament) {
