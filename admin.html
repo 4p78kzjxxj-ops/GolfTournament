@@ -340,31 +340,37 @@
     };
 
     window.promptSpectatorTournament = function() {
-      const list = getTournamentArray();
+  const list = getTournamentArray();
 
-      if (!list.length) {
-        alert("No tournaments available.");
-        return;
-      }
+  if (!list.length) {
+    alert("No tournaments available.");
+    return;
+  }
 
-      const choices = list.map((tournament, index) => {
-        return `${index + 1} = ${tournament.name}${tournament.date ? " - " + tournament.date : ""}`;
-      }).join("\n");
+  const menu = document.getElementById("adminMenu");
 
-      const selection = prompt(`Which tournament do you want to view?\n\n${choices}`);
+  menu.innerHTML = `
+    <a href="index.html">Home</a>
+    <a href="#" onclick="renderAdminMainMenu(); return false;">← Back</a>
+    ${list.map(tournament => `
+      <a href="#" onclick="openSpectatorTournament('${tournament.id}'); return false;">
+        ${escapeHtml(tournament.name)}${tournament.date ? " - " + escapeHtml(tournament.date) : ""}
+      </a>
+    `).join("")}
+  `;
+};
 
-      if (selection === null) return;
+window.openSpectatorTournament = function(tournamentId) {
+  localStorage.setItem("currentTournamentId", tournamentId);
+  window.location.href = "spectator.html";
+};
 
-      const index = Number(selection.trim()) - 1;
-
-      if (!list[index]) {
-        alert("Invalid tournament selection.");
-        return;
-      }
-
-      localStorage.setItem("currentTournamentId", list[index].id);
-      window.location.href = "spectator.html";
-    };
+window.renderAdminMainMenu = function() {
+  document.getElementById("adminMenu").innerHTML = `
+    <a href="index.html">Home</a>
+    <a href="#" onclick="promptSpectatorTournament(); return false;">Spectator View</a>
+  `;
+};
 
     window.createTournament = async function() {
       const name = document.getElementById("tournamentName").value.trim();
