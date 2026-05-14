@@ -525,29 +525,38 @@
     };
 
     window.saveCurrentHole = async function(showAlert = true) {
-      const matchData = playerMatches.find(item => item.key === selectedMatchKey);
-      if (!matchData) return;
+  const matchData = playerMatches.find(item => item.key === selectedMatchKey);
+  if (!matchData) return;
 
-      const redScore = document.getElementById("redScore")?.textContent.trim();
-      const blueScore = document.getElementById("blueScore")?.textContent.trim();
+  const redScore = document.getElementById("redScore")?.textContent.trim();
+  const blueScore = document.getElementById("blueScore")?.textContent.trim();
 
-      const redNum = Number(redScore);
-      const blueNum = Number(blueScore);
+  const redNum = Number(redScore);
+  const blueNum = Number(blueScore);
 
-      if (redNum < 1 || blueNum < 1) {
-        alert("Scores must be greater than 0.");
-        return;
-      }
+  if (redNum < 1 || blueNum < 1) {
+    alert("Scores must be greater than 0.");
+    return;
+  }
 
-      await update(ref(db, `tournaments/${matchData.tournamentId}/matches/${matchData.matchId}/holes/${currentHole}`), {
-        redScore: redNum,
-        blueScore: blueNum
-      });
+  await update(
+    ref(
+      db,
+      `tournaments/${matchData.tournamentId}/matches/${matchData.matchId}/holes/${currentHole}`
+    ),
+    {
+      redScore: redNum,
+      blueScore: blueNum
+    }
+  );
 
-      if (showAlert) {
-        alert(`Hole ${currentHole} saved.`);
-      }
-    };
+  if (currentHole < 18) {
+    currentHole++;
+    render();
+  } else {
+    alert("Round complete.");
+  }
+};
 
     function findPlayerMatches(code) {
       if (!/^\d{4}$/.test(code)) return [];
