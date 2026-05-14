@@ -547,46 +547,18 @@
     }
 
     function calculateMatchStatus(match) {
-  let redWins = 0;
-  let blueWins = 0;
-  let completedHoles = 0;
+      let redWins = 0;
+      let blueWins = 0;
 
-  for (let i = 1; i <= 18; i++) {
-    const hole = match.holes?.[i];
-    const redScore = hole?.redScore;
-    const blueScore = hole?.blueScore;
+      Object.values(match.holes || {}).forEach(hole => {
+        const redScore = hole?.redScore;
+        const blueScore = hole?.blueScore;
 
-    if (!redScore || !blueScore) continue;
+        if (!redScore || !blueScore) return;
 
-    completedHoles++;
-
-    if (Number(redScore) < Number(blueScore)) {
-      redWins++;
-    } else if (Number(blueScore) < Number(redScore)) {
-      blueWins++;
-    }
-  }
-
-  const diff = Math.abs(redWins - blueWins);
-  const leader = redWins > blueWins ? "Red" : blueWins > redWins ? "Blue" : null;
-
-  const holesRemaining = 18 - completedHoles;
-
-  // Match tied
-  if (!leader) {
-    return holesRemaining === 0
-      ? "Match Tied"
-      : "All Square";
-  }
-
-  // Match already clinched
-  if (diff > holesRemaining) {
-    return `${leader} Wins ${diff} & ${holesRemaining}`;
-  }
-
-  // Match still active
-  return `${leader} ${diff} Up with ${holesRemaining} to go`;
-});
+        if (Number(redScore) < Number(blueScore)) redWins++;
+        if (Number(blueScore) < Number(redScore)) blueWins++;
+      });
 
       const diff = redWins - blueWins;
 
