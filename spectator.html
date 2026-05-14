@@ -439,13 +439,17 @@
           </div>
 
           <div class="matchup-line">
-  <span class="matchup-red">
+  <div class="matchup-red">
     ${redPlayers.map(name => escapeHtml(name)).join(" / ")} (${totals.red})
-  </span>
-  <span class="matchup-vs">vs</span>
-  <span class="matchup-blue">
+  </div>
+
+  <div class="matchup-vs" style="margin:8px 0;">
+    vs
+  </div>
+
+  <div class="matchup-blue">
     ${bluePlayers.map(name => escapeHtml(name)).join(" / ")} (${totals.blue})
-  </span>
+  </div>
 </div>
 
           <div class="nine-label">Front 9</div>
