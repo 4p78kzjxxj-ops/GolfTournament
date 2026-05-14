@@ -81,6 +81,12 @@
     .edit-grid { display: grid; grid-template-columns: 1.5fr 1fr 120px; gap: 10px; margin-top: 12px; align-items: end; }
     .edit-grid label { margin-top: 0; }
 
+    .menu-wrap { position: relative; }
+    .menu-btn { background: #334155; min-width: 54px; padding: 12px 16px; font-size: 24px; line-height: 1; }
+    .menu-dropdown { position: absolute; right: 0; top: 62px; width: 220px; background: rgba(16, 28, 23, 0.98); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 18px 50px rgba(0,0,0,0.45); padding: 10px; z-index: 50; }
+    .menu-dropdown a { display: block; color: var(--text); text-decoration: none; padding: 14px 12px; border-radius: 12px; font-weight: 800; }
+    .menu-dropdown a:hover { background: rgba(255,255,255,0.08); }
+
     @media (max-width: 900px) {
       .grid.two, .grid.three, .match-grid, .edit-grid, .mode-buttons { grid-template-columns: 1fr; }
       .topbar { flex-direction: column; align-items: flex-start; }
@@ -105,7 +111,18 @@
           <h1>Tournament Admin</h1>
           <p>Choose whether to create a new tournament or manage an existing one.</p>
         </div>
-        <div class="status" id="connectionStatus">Connecting to Firebase...</div>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="status" id="connectionStatus">Connecting to Firebase...</div>
+
+          <div class="menu-wrap">
+            <button class="menu-btn" onclick="toggleAdminMenu()">☰</button>
+            <div id="adminMenu" class="menu-dropdown hidden">
+              <a href="index.html">Home</a>
+              <a href="spectator.html">Spectator View</a>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="card">
@@ -173,8 +190,17 @@
         </div>
 
         <div class="card">
-          <h2>Matches</h2>
-          <div id="matchList"></div>
+          <div class="section-header">
+            <div>
+              <h2 style="margin-bottom:4px;">Matches</h2>
+              <div class="muted">Matches are hidden by default.</div>
+            </div>
+            <button id="toggleMatchesBtn" class="blue-btn" onclick="toggleMatches()">View Matches</button>
+          </div>
+
+          <div id="matchesPanel" class="hidden">
+            <div id="matchList"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -202,6 +228,7 @@
     let tournaments = {};
     let currentTournamentId = null;
     let playersVisible = false;
+    let matchesVisible = false;
     let activeMode = "";
 
     const connectionStatus = document.getElementById("connectionStatus");
@@ -298,6 +325,16 @@
       playersVisible = !playersVisible;
       document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
       document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
+    };
+
+    window.toggleMatches = function() {
+      matchesVisible = !matchesVisible;
+      document.getElementById("matchesPanel").classList.toggle("hidden", !matchesVisible);
+      document.getElementById("toggleMatchesBtn").textContent = matchesVisible ? "Hide Matches" : "View Matches";
+    };
+
+    window.toggleAdminMenu = function() {
+      document.getElementById("adminMenu").classList.toggle("hidden");
     };
 
     window.createTournament = async function() {
@@ -587,8 +624,13 @@
       renderPlayers();
       renderPlayerDropdowns();
       renderMatches();
+
       document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
       document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
+
+      document.getElementById("matchesPanel").classList.toggle("hidden", !matchesVisible);
+      document.getElementById("toggleMatchesBtn").textContent = matchesVisible ? "Hide Matches" : "View Matches";
+
       if (activeMode === "current" && !currentTournamentId) {
         document.getElementById("settingsSection").classList.add("hidden");
       }
