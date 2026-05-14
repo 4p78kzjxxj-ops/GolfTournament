@@ -9,7 +9,6 @@
     :root {
       --bg: #08110d;
       --card: #101c17;
-      --card2: #16251f;
       --text: #f8fafc;
       --muted: #a7b3ad;
       --green: #16a34a;
@@ -32,228 +31,56 @@
       min-height: 100vh;
     }
 
-    .page {
-      width: min(1200px, 100%);
-      margin: 0 auto;
-      padding: 18px 14px 40px;
-    }
+    .page { width: min(1200px, 100%); margin: 0 auto; padding: 18px 14px 40px; }
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-card, .card { background: rgba(16, 28, 23, 0.9); border: 1px solid var(--border); border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); backdrop-filter: blur(10px); }
+    .login-card { width: min(420px, 100%); padding: 24px; }
+    .login-card h1 { margin-top: 0; margin-bottom: 8px; font-size: 34px; }
+    .login-card p { margin-top: 0; color: var(--muted); line-height: 1.45; }
 
-    .login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .login-card,
-    .card {
-      background: rgba(16, 28, 23, 0.9);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-      backdrop-filter: blur(10px);
-    }
-
-    .login-card {
-      width: min(420px, 100%);
-      padding: 24px;
-    }
-
-    .login-card h1 {
-      margin-top: 0;
-      margin-bottom: 8px;
-      font-size: 34px;
-    }
-
-    .login-card p {
-      margin-top: 0;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    input,
-    select {
-      width: 100%;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: #020617;
-      color: var(--text);
-      min-height: 54px;
-      padding: 12px 14px;
-      font-size: 16px;
-    }
-
-    .admin-code {
-      text-align: center;
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: 10px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 16px;
-      min-height: 54px;
-      padding: 12px 18px;
-      color: var(--text);
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
+    input, select { width: 100%; border-radius: 16px; border: 1px solid var(--border); background: #020617; color: var(--text); min-height: 54px; padding: 12px 14px; font-size: 16px; }
+    .admin-code { text-align: center; font-size: 30px; font-weight: 900; letter-spacing: 10px; }
+    button { border: 0; border-radius: 16px; min-height: 54px; padding: 12px 18px; color: var(--text); font-weight: 800; font-size: 15px; cursor: pointer; }
     .green-btn { background: linear-gradient(135deg, var(--green), var(--green2)); }
     .red-btn { background: var(--red); }
     .blue-btn { background: var(--blue); }
     .gray-btn { background: #334155; }
     .gold-btn { background: var(--gold); color: #111827; }
 
-    .error {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(220, 38, 38, 0.18);
-      border: 1px solid rgba(220, 38, 38, 0.35);
-      color: #fecaca;
-      display: none;
-    }
-
+    .error { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(220, 38, 38, 0.18); border: 1px solid rgba(220, 38, 38, 0.35); color: #fecaca; display: none; }
     .error.show { display: block; }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .topbar h1 {
-      margin: 0;
-      font-size: clamp(26px, 5vw, 42px);
-    }
-
-    .topbar p {
-      margin: 4px 0 0;
-      color: #d1fae5;
-    }
-
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .topbar h1 { margin: 0; font-size: clamp(26px, 5vw, 42px); }
+    .topbar p { margin: 4px 0 0; color: #d1fae5; }
     .dashboard { display: none; }
     .dashboard.show { display: block; }
-
     .grid { display: grid; gap: 14px; }
     .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
     .card { padding: 18px; }
     .card h2, .card h3 { margin-top: 0; }
 
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(22, 163, 74, 0.18);
-      border: 1px solid rgba(22, 163, 74, 0.35);
-      color: #bbf7d0;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .list-item {
-      background: rgba(2, 6, 23, 0.75);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 14px;
-      margin-top: 10px;
-    }
-
+    label { display: block; margin: 12px 0 6px; color: var(--muted); font-size: 13px; font-weight: 800; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(22, 163, 74, 0.18); border: 1px solid rgba(22, 163, 74, 0.35); color: #bbf7d0; font-size: 13px; font-weight: 700; }
+    .list-item { background: rgba(2, 6, 23, 0.75); border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-top: 10px; }
     .list-item strong { font-size: 16px; }
+    .muted { color: var(--muted); font-size: 14px; }
 
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .match-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .team-box {
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(2, 6, 23, 0.8);
-    }
-
+    .match-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+    .team-box { padding: 12px; border-radius: 14px; border: 1px solid var(--border); background: rgba(2, 6, 23, 0.8); }
     .red-team { border-left: 5px solid var(--red); }
     .blue-team { border-left: 5px solid var(--blue); }
-
-    .player-code {
-      display: inline-block;
-      margin-top: 6px;
-      background: rgba(245, 197, 66, 0.15);
-      color: #fde68a;
-      border: 1px solid rgba(245, 197, 66, 0.25);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
+    .player-code { display: inline-block; margin-top: 6px; background: rgba(245, 197, 66, 0.15); color: #fde68a; border: 1px solid rgba(245, 197, 66, 0.25); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
     .hidden { display: none; }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .edit-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 120px;
-      gap: 10px;
-      margin-top: 12px;
-      align-items: end;
-    }
-
-    .edit-grid label {
-      margin-top: 0;
-    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .edit-grid { display: grid; grid-template-columns: 1.5fr 1fr 120px; gap: 10px; margin-top: 12px; align-items: end; }
+    .edit-grid label { margin-top: 0; }
 
     @media (max-width: 900px) {
-      .grid.two,
-      .grid.three,
-      .match-grid,
-      .edit-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      .grid.two, .grid.three, .match-grid, .edit-grid { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -262,22 +89,8 @@
     <div class="login-card">
       <h1>Admin Access</h1>
       <p>Enter the admin code to manage tournaments, players, and matches.</p>
-
-      <input
-        id="adminCode"
-        class="admin-code"
-        type="password"
-        maxlength="4"
-        inputmode="numeric"
-        placeholder="0000"
-        oninput="cleanCode()"
-        onkeydown="loginOnEnter(event)"
-      />
-
-      <div class="button-row">
-        <button class="green-btn" style="width:100%" onclick="checkAdminCode()">Enter Admin Panel</button>
-      </div>
-
+      <input id="adminCode" class="admin-code" type="password" maxlength="4" inputmode="numeric" placeholder="0000" oninput="cleanCode()" onkeydown="loginOnEnter(event)" />
+      <div class="button-row"><button class="green-btn" style="width:100%" onclick="checkAdminCode()">Enter Admin Panel</button></div>
       <div id="loginError" class="error">Incorrect admin code.</div>
     </div>
   </div>
@@ -287,7 +100,7 @@
       <div class="topbar">
         <div>
           <h1>Tournament Admin</h1>
-          <p>Manage tournaments, players, matches, and player IDs.</p>
+          <p>Manage tournaments, team names, players, matches, and player IDs.</p>
         </div>
         <div class="status" id="connectionStatus">Connecting to Firebase...</div>
       </div>
@@ -295,21 +108,21 @@
       <div class="grid two">
         <div class="card">
           <h2>Create Tournament</h2>
-
           <label>Tournament Name</label>
           <input id="tournamentName" placeholder="Spring Classic 2026" />
-
           <label>Date</label>
           <input id="tournamentDate" type="date" />
-
-          <div class="button-row">
-            <button class="green-btn" onclick="createTournament()">Create Tournament</button>
-          </div>
+          <label>Red Team Name</label>
+          <input id="newRedTeamName" placeholder="Red Team" value="Red Team" />
+          <label>Blue Team Name</label>
+          <input id="newBlueTeamName" placeholder="Blue Team" value="Blue Team" />
+          <div class="button-row"><button class="green-btn" onclick="createTournament()">Create Tournament</button></div>
         </div>
 
         <div class="card">
           <h2>Current Tournament</h2>
           <div id="currentTournamentBox" class="muted">No tournament selected.</div>
+          <div id="tournamentEditBox"></div>
         </div>
       </div>
 
@@ -321,23 +134,13 @@
       <div class="grid two">
         <div class="card">
           <h2>Add Player</h2>
-
           <label>Player Name</label>
           <input id="playerName" placeholder="Player Name" />
-
           <label>Team</label>
-          <select id="playerTeam">
-            <option value="Red">Red Team</option>
-            <option value="Blue">Blue Team</option>
-            <option value="Unassigned">Unassigned</option>
-          </select>
-
+          <select id="playerTeam"></select>
           <label>4 Digit Player Code</label>
           <input id="playerCode" maxlength="4" inputmode="numeric" placeholder="1234" oninput="cleanPlayerCode()" />
-
-          <div class="button-row">
-            <button class="green-btn" onclick="addPlayer()">Add Player</button>
-          </div>
+          <div class="button-row"><button class="green-btn" onclick="addPlayer()">Add Player</button></div>
         </div>
 
         <div class="card">
@@ -348,46 +151,20 @@
             </div>
             <button id="togglePlayersBtn" class="blue-btn" onclick="togglePlayers()">View Players</button>
           </div>
-
-          <div id="playersPanel" class="hidden">
-            <div id="playerList"></div>
-          </div>
+          <div id="playersPanel" class="hidden"><div id="playerList"></div></div>
         </div>
       </div>
 
       <div class="card">
         <h2>Create Match</h2>
-
-        <div class="grid three">
-          <div>
-            <label>Red Player 1</label>
-            <select id="red1"></select>
-          </div>
-
-          <div>
-            <label>Red Player 2</label>
-            <select id="red2"></select>
-          </div>
-
-          <div>
-            <label>Blue Player 1</label>
-            <select id="blue1"></select>
-          </div>
-
-          <div>
-            <label>Blue Player 2</label>
-            <select id="blue2"></select>
-          </div>
-
-          <div>
-            <label>Match Name</label>
-            <input id="matchName" placeholder="Match 1" />
-          </div>
+        <div class="muted">Match names are created automatically from player last names.</div>
+        <div class="grid two">
+          <div><label id="red1Label">Red Player 1</label><select id="red1"></select></div>
+          <div><label id="red2Label">Red Player 2</label><select id="red2"></select></div>
+          <div><label id="blue1Label">Blue Player 1</label><select id="blue1"></select></div>
+          <div><label id="blue2Label">Blue Player 2</label><select id="blue2"></select></div>
         </div>
-
-        <div class="button-row">
-          <button class="green-btn" onclick="createMatch()">Create Match</button>
-        </div>
+        <div class="button-row"><button class="green-btn" onclick="createMatch()">Create Match</button></div>
       </div>
 
       <div class="card">
@@ -399,15 +176,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      push,
-      set,
-      update,
-      remove,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+    import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
     const ADMIN_CODE = "9999";
 
@@ -436,12 +205,10 @@
 
     onValue(ref(db, "tournaments"), snapshot => {
       tournaments = snapshot.val() || {};
-
       if (currentTournamentId && !tournaments[currentTournamentId]) {
         currentTournamentId = null;
         localStorage.removeItem("currentTournamentId");
       }
-
       render();
     });
 
@@ -450,15 +217,16 @@
       return tournaments[currentTournamentId] || null;
     }
 
+    function redTeamName(tournament = getCurrentTournament()) {
+      return tournament?.teamNames?.red || "Red Team";
+    }
+
+    function blueTeamName(tournament = getCurrentTournament()) {
+      return tournament?.teamNames?.blue || "Blue Team";
+    }
+
     function getTournamentArray() {
-      return Object.entries(tournaments)
-        .map(([id, tournament]) => ({
-          id,
-          ...tournament,
-          players: tournament.players || {},
-          matches: tournament.matches || {}
-        }))
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      return Object.entries(tournaments).map(([id, tournament]) => ({ id, ...tournament, players: tournament.players || {}, matches: tournament.matches || {} })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     }
 
     function getPlayersArray(tournament) {
@@ -477,18 +245,14 @@
       document.getElementById("loginError").classList.remove("show");
     };
 
-    window.loginOnEnter = function(event) {
-      if (event.key === "Enter") checkAdminCode();
-    };
+    window.loginOnEnter = function(event) { if (event.key === "Enter") checkAdminCode(); };
 
     window.checkAdminCode = function() {
       const code = document.getElementById("adminCode").value.trim();
-
       if (code !== ADMIN_CODE) {
         document.getElementById("loginError").classList.add("show");
         return;
       }
-
       document.getElementById("loginScreen").style.display = "none";
       document.getElementById("dashboard").classList.add("show");
     };
@@ -512,22 +276,27 @@
     window.createTournament = async function() {
       const name = document.getElementById("tournamentName").value.trim();
       const date = document.getElementById("tournamentDate").value;
-
+      const red = document.getElementById("newRedTeamName").value.trim() || "Red Team";
+      const blue = document.getElementById("newBlueTeamName").value.trim() || "Blue Team";
       if (!name) return alert("Enter a tournament name.");
 
       const newTournamentRef = push(ref(db, "tournaments"));
-
-      await set(newTournamentRef, {
-        name,
-        date,
-        createdAt: Date.now()
-      });
+      await set(newTournamentRef, { name, date, teamNames: { red, blue }, createdAt: Date.now() });
 
       currentTournamentId = newTournamentRef.key;
       localStorage.setItem("currentTournamentId", currentTournamentId);
-
       document.getElementById("tournamentName").value = "";
       document.getElementById("tournamentDate").value = "";
+    };
+
+    window.saveTournamentSettings = async function() {
+      if (!currentTournamentId) return alert("Select a tournament first.");
+      const name = document.getElementById("editTournamentName").value.trim();
+      const red = document.getElementById("editRedTeamName").value.trim() || "Red Team";
+      const blue = document.getElementById("editBlueTeamName").value.trim() || "Blue Team";
+      if (!name) return alert("Tournament name cannot be blank.");
+      await update(ref(db, `tournaments/${currentTournamentId}`), { name, teamNames: { red, blue } });
+      alert("Tournament settings updated.");
     };
 
     window.selectTournament = function(id) {
@@ -538,9 +307,7 @@
 
     window.deleteTournament = async function(id) {
       if (!confirm("Delete this tournament?")) return;
-
       await remove(ref(db, `tournaments/${id}`));
-
       if (currentTournamentId === id) {
         currentTournamentId = null;
         localStorage.removeItem("currentTournamentId");
@@ -550,29 +317,16 @@
     window.addPlayer = async function() {
       const tournament = getCurrentTournament();
       if (!tournament) return alert("Create or select a tournament first.");
-
       const name = document.getElementById("playerName").value.trim();
       const team = document.getElementById("playerTeam").value;
       const code = document.getElementById("playerCode").value.trim();
-
       if (!name) return alert("Enter a player name.");
       if (!/^\d{4}$/.test(code)) return alert("Player code must be exactly 4 digits.");
-
       const existingPlayers = getPlayersArray(tournament);
-      if (existingPlayers.some(player => player.code === code)) {
-        alert("That player code already exists.");
-        return;
-      }
+      if (existingPlayers.some(player => player.code === code)) return alert("That player code already exists.");
 
       const newPlayerRef = push(ref(db, `tournaments/${currentTournamentId}/players`));
-
-      await set(newPlayerRef, {
-        name,
-        team,
-        code,
-        createdAt: Date.now()
-      });
-
+      await set(newPlayerRef, { name, team, code, createdAt: Date.now() });
       document.getElementById("playerName").value = "";
       document.getElementById("playerCode").value = "";
     };
@@ -580,78 +334,41 @@
     window.savePlayerEdits = async function(playerId) {
       const tournament = getCurrentTournament();
       if (!tournament) return;
-
       const name = document.getElementById(`edit-name-${playerId}`).value.trim();
       const team = document.getElementById(`edit-team-${playerId}`).value;
       const code = document.getElementById(`edit-code-${playerId}`).value.trim();
-
       if (!name) return alert("Player name cannot be blank.");
       if (!/^\d{4}$/.test(code)) return alert("Player code must be exactly 4 digits.");
-
       const players = getPlayersArray(tournament);
-      const duplicateCode = players.some(player => player.id !== playerId && player.code === code);
-
-      if (duplicateCode) {
-        alert("That player code is already being used by another player.");
-        return;
-      }
-
-      await update(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`), {
-        name,
-        team,
-        code
-      });
-
+      if (players.some(player => player.id !== playerId && player.code === code)) return alert("That player code is already being used by another player.");
+      await update(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`), { name, team, code });
       alert("Player updated.");
     };
 
     window.deletePlayer = async function(playerId) {
       const tournament = getCurrentTournament();
       const matches = getMatchesArray(tournament);
-
-      const inMatch = matches.some(match => {
-        const ids = [...(match.red || []), ...(match.blue || [])];
-        return ids.includes(playerId);
-      });
-
-      if (inMatch) {
-        alert("Player is already in a match. Delete the match first.");
-        return;
-      }
-
+      const inMatch = matches.some(match => [...(match.red || []), ...(match.blue || [])].includes(playerId));
+      if (inMatch) return alert("Player is already in a match. Delete the match first.");
       await remove(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`));
     };
 
     window.createMatch = async function() {
       const tournament = getCurrentTournament();
       if (!tournament) return alert("Create or select a tournament first.");
-
       const red1 = document.getElementById("red1").value;
       const red2 = document.getElementById("red2").value;
       const blue1 = document.getElementById("blue1").value;
       const blue2 = document.getElementById("blue2").value;
-      const matchName = document.getElementById("matchName").value.trim();
       const players = [red1, red2, blue1, blue2];
-
       if (players.some(id => !id)) return alert("Select all 4 players.");
       if (new Set(players).size !== 4) return alert("Players can only be selected once.");
 
+      const matchName = `${playerLastName(red1)} / ${playerLastName(red2)} vs ${playerLastName(blue1)} / ${playerLastName(blue2)}`;
       const newMatchRef = push(ref(db, `tournaments/${currentTournamentId}/matches`));
-
       const holes = {};
-      for (let i = 1; i <= 18; i++) {
-        holes[i] = "";
-      }
-
-      await set(newMatchRef, {
-        name: matchName || "Match",
-        red: [red1, red2],
-        blue: [blue1, blue2],
-        holes,
-        createdAt: Date.now()
-      });
-
-      document.getElementById("matchName").value = "";
+      for (let i = 1; i <= 18; i++) holes[i] = "";
+      await set(newMatchRef, { name: matchName, red: [red1, red2], blue: [blue1, blue2], holes, createdAt: Date.now() });
     };
 
     window.deleteMatch = async function(matchId) {
@@ -660,63 +377,60 @@
     };
 
     function playerName(playerId) {
-      const tournament = getCurrentTournament();
-      return tournament?.players?.[playerId]?.name || "Unknown";
+      return getCurrentTournament()?.players?.[playerId]?.name || "Unknown";
+    }
+
+    function playerLastName(playerId) {
+      const fullName = playerName(playerId).trim();
+      const parts = fullName.split(/\s+/).filter(Boolean);
+      return parts.length ? parts[parts.length - 1] : fullName;
     }
 
     function playerCode(playerId) {
-      const tournament = getCurrentTournament();
-      return tournament?.players?.[playerId]?.code || "----";
+      return getCurrentTournament()?.players?.[playerId]?.code || "----";
+    }
+
+    function teamOptionsHtml(selectedTeam) {
+      const red = redTeamName();
+      const blue = blueTeamName();
+      return `
+        <option value="Red" ${selectedTeam === "Red" ? "selected" : ""}>${escapeHtml(red)}</option>
+        <option value="Blue" ${selectedTeam === "Blue" ? "selected" : ""}>${escapeHtml(blue)}</option>
+        <option value="Unassigned" ${selectedTeam === "Unassigned" ? "selected" : ""}>Unassigned</option>
+      `;
     }
 
     function renderCurrentTournament() {
       const box = document.getElementById("currentTournamentBox");
+      const editBox = document.getElementById("tournamentEditBox");
       const tournament = getCurrentTournament();
-
       if (!tournament) {
         box.innerHTML = "No tournament selected.";
+        editBox.innerHTML = "";
         return;
       }
-
       const playerCount = Object.keys(tournament.players || {}).length;
       const matchCount = Object.keys(tournament.matches || {}).length;
-
-      box.innerHTML = `
-        <strong>${escapeHtml(tournament.name)}</strong><br />
-        <div class="muted">
-          ${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches
-        </div>
+      box.innerHTML = `<strong>${escapeHtml(tournament.name)}</strong><br /><div class="muted">${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches</div>`;
+      editBox.innerHTML = `
+        <label>Tournament Name</label>
+        <input id="editTournamentName" value="${escapeAttribute(tournament.name || "")}" />
+        <label>Red Team Name</label>
+        <input id="editRedTeamName" value="${escapeAttribute(redTeamName(tournament))}" />
+        <label>Blue Team Name</label>
+        <input id="editBlueTeamName" value="${escapeAttribute(blueTeamName(tournament))}" />
+        <div class="button-row"><button class="green-btn" onclick="saveTournamentSettings()">Save Tournament Settings</button></div>
       `;
     }
 
     function renderTournamentList() {
       const box = document.getElementById("tournamentList");
-      const tournaments = getTournamentArray();
-
-      if (!tournaments.length) {
-        box.innerHTML = '<div class="muted">No tournaments yet.</div>';
-        return;
-      }
-
-      box.innerHTML = tournaments.map(tournament => {
+      const list = getTournamentArray();
+      if (!list.length) { box.innerHTML = '<div class="muted">No tournaments yet.</div>'; return; }
+      box.innerHTML = list.map(tournament => {
         const playerCount = Object.keys(tournament.players || {}).length;
         const matchCount = Object.keys(tournament.matches || {}).length;
-
-        return `
-          <div class="list-item">
-            <strong>${escapeHtml(tournament.name)}</strong><br />
-            <div class="muted">
-              ${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches
-            </div>
-
-            <div class="button-row">
-              <button class="blue-btn" onclick="selectTournament('${tournament.id}')">
-                ${currentTournamentId === tournament.id ? "Current Tournament" : "Open"}
-              </button>
-              <button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button>
-            </div>
-          </div>
-        `;
+        return `<div class="list-item"><strong>${escapeHtml(tournament.name)}</strong><br /><div class="muted">${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches</div><div class="button-row"><button class="blue-btn" onclick="selectTournament('${tournament.id}')">${currentTournamentId === tournament.id ? "Current Tournament" : "Open"}</button><button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button></div></div>`;
       }).join("");
     }
 
@@ -724,70 +438,42 @@
       const box = document.getElementById("playerList");
       const tournament = getCurrentTournament();
       const players = getPlayersArray(tournament);
-
-      if (!tournament) {
-        box.innerHTML = '<div class="muted">Create or select a tournament first.</div>';
-        return;
-      }
-
-      if (!players.length) {
-        box.innerHTML = '<div class="muted">No players added yet.</div>';
-        return;
-      }
-
+      if (!tournament) { box.innerHTML = '<div class="muted">Create or select a tournament first.</div>'; return; }
+      if (!players.length) { box.innerHTML = '<div class="muted">No players added yet.</div>'; return; }
       box.innerHTML = players.map(player => `
         <div class="list-item">
           <strong>Edit Player</strong>
           <div class="player-code">Current ID: ${escapeHtml(player.code || "----")}</div>
-
           <div class="edit-grid">
-            <div>
-              <label>Name</label>
-              <input id="edit-name-${player.id}" value="${escapeAttribute(player.name || "")}" />
-            </div>
-
-            <div>
-              <label>Team</label>
-              <select id="edit-team-${player.id}">
-                <option value="Red" ${player.team === "Red" ? "selected" : ""}>Red Team</option>
-                <option value="Blue" ${player.team === "Blue" ? "selected" : ""}>Blue Team</option>
-                <option value="Unassigned" ${player.team === "Unassigned" ? "selected" : ""}>Unassigned</option>
-              </select>
-            </div>
-
-            <div>
-              <label>4 Digit ID</label>
-              <input id="edit-code-${player.id}" maxlength="4" inputmode="numeric" value="${escapeAttribute(player.code || "")}" oninput="cleanEditPlayerCode('${player.id}')" />
-            </div>
+            <div><label>Name</label><input id="edit-name-${player.id}" value="${escapeAttribute(player.name || "")}" /></div>
+            <div><label>Team</label><select id="edit-team-${player.id}">${teamOptionsHtml(player.team || "Unassigned")}</select></div>
+            <div><label>4 Digit ID</label><input id="edit-code-${player.id}" maxlength="4" inputmode="numeric" value="${escapeAttribute(player.code || "")}" oninput="cleanEditPlayerCode('${player.id}')" /></div>
           </div>
-
-          <div class="button-row">
-            <button class="green-btn" onclick="savePlayerEdits('${player.id}')">Save Player</button>
-            <button class="red-btn" onclick="deletePlayer('${player.id}')">Delete</button>
-          </div>
+          <div class="button-row"><button class="green-btn" onclick="savePlayerEdits('${player.id}')">Save Player</button><button class="red-btn" onclick="deletePlayer('${player.id}')">Delete</button></div>
         </div>
       `).join("");
+    }
+
+    function renderTeamSelectors() {
+      const select = document.getElementById("playerTeam");
+      const current = select.value || "Unassigned";
+      select.innerHTML = teamOptionsHtml(current);
+      document.getElementById("red1Label").textContent = `${redTeamName()} Player 1`;
+      document.getElementById("red2Label").textContent = `${redTeamName()} Player 2`;
+      document.getElementById("blue1Label").textContent = `${blueTeamName()} Player 1`;
+      document.getElementById("blue2Label").textContent = `${blueTeamName()} Player 2`;
     }
 
     function renderPlayerDropdowns() {
       const tournament = getCurrentTournament();
       const players = getPlayersArray(tournament);
-      const selects = ["red1", "red2", "blue1", "blue2"];
-
-      selects.forEach(id => {
+      ["red1", "red2", "blue1", "blue2"].forEach(id => {
         const select = document.getElementById(id);
         const oldValue = select.value;
-
         select.innerHTML = '<option value="">Select Player</option>';
-
         players.forEach(player => {
-          select.innerHTML += `
-            <option value="${player.id}">
-              ${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})
-            </option>
-          `;
+          select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`;
         });
-
         select.value = oldValue;
       });
     }
@@ -796,63 +482,17 @@
       const box = document.getElementById("matchList");
       const tournament = getCurrentTournament();
       const matches = getMatchesArray(tournament);
-
-      if (!tournament) {
-        box.innerHTML = '<div class="muted">Create or select a tournament first.</div>';
-        return;
-      }
-
-      if (!matches.length) {
-        box.innerHTML = '<div class="muted">No matches created yet.</div>';
-        return;
-      }
-
+      if (!tournament) { box.innerHTML = '<div class="muted">Create or select a tournament first.</div>'; return; }
+      if (!matches.length) { box.innerHTML = '<div class="muted">No matches created yet.</div>'; return; }
       box.innerHTML = matches.map((match, index) => {
-        const redPlayers = (match.red || []).map(playerId => `
-          <div>
-            ${escapeHtml(playerName(playerId))}<br />
-            <span class="player-code">${escapeHtml(playerCode(playerId))}</span>
-          </div>
-        `).join("");
-
-        const bluePlayers = (match.blue || []).map(playerId => `
-          <div>
-            ${escapeHtml(playerName(playerId))}<br />
-            <span class="player-code">${escapeHtml(playerCode(playerId))}</span>
-          </div>
-        `).join("");
-
-        return `
-          <div class="list-item">
-            <strong>${escapeHtml(match.name || `Match ${index + 1}`)}</strong>
-
-            <div class="match-grid">
-              <div class="team-box red-team">
-                <strong>Red Team</strong>
-                <div style="margin-top:8px; display:grid; gap:8px;">${redPlayers}</div>
-              </div>
-
-              <div class="team-box blue-team">
-                <strong>Blue Team</strong>
-                <div style="margin-top:8px; display:grid; gap:8px;">${bluePlayers}</div>
-              </div>
-            </div>
-
-            <div class="button-row">
-              <button class="red-btn" onclick="deleteMatch('${match.id}')">Delete Match</button>
-            </div>
-          </div>
-        `;
+        const redPlayers = (match.red || []).map(playerId => `<div>${escapeHtml(playerName(playerId))}<br /><span class="player-code">${escapeHtml(playerCode(playerId))}</span></div>`).join("");
+        const bluePlayers = (match.blue || []).map(playerId => `<div>${escapeHtml(playerName(playerId))}<br /><span class="player-code">${escapeHtml(playerCode(playerId))}</span></div>`).join("");
+        return `<div class="list-item"><strong>${escapeHtml(match.name || `Match ${index + 1}`)}</strong><div class="match-grid"><div class="team-box red-team"><strong>${escapeHtml(redTeamName())}</strong><div style="margin-top:8px; display:grid; gap:8px;">${redPlayers}</div></div><div class="team-box blue-team"><strong>${escapeHtml(blueTeamName())}</strong><div style="margin-top:8px; display:grid; gap:8px;">${bluePlayers}</div></div></div><div class="button-row"><button class="red-btn" onclick="deleteMatch('${match.id}')">Delete Match</button></div></div>`;
       }).join("");
     }
 
     function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
     function escapeAttribute(value) {
@@ -862,10 +502,10 @@
     function render() {
       renderCurrentTournament();
       renderTournamentList();
+      renderTeamSelectors();
       renderPlayers();
       renderPlayerDropdowns();
       renderMatches();
-
       document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
       document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
     }
