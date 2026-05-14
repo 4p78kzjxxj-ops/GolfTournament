@@ -206,7 +206,7 @@
     const db = getDatabase(app);
 
     let tournaments = {};
-    let currentTournamentId = localStorage.getItem("currentTournamentId") || null;
+    let currentTournamentId = null;
     let playersVisible = false;
     let activeMode = "";
 
@@ -263,14 +263,19 @@
       }
       document.getElementById("loginScreen").style.display = "none";
       document.getElementById("dashboard").classList.add("show");
+      currentTournamentId = null;
+      localStorage.removeItem("currentTournamentId");
       showCurrentTournaments();
+      document.getElementById("settingsSection").classList.add("hidden");
     };
 
     window.showCurrentTournaments = function() {
       activeMode = "current";
+      currentTournamentId = null;
+      localStorage.removeItem("currentTournamentId");
       document.getElementById("currentTournamentsSection").classList.remove("hidden");
       document.getElementById("createTournamentSection").classList.add("hidden");
-      document.getElementById("settingsSection").classList.toggle("hidden", !currentTournamentId);
+      document.getElementById("settingsSection").classList.add("hidden");
       render();
     };
 
@@ -316,14 +321,14 @@
       const newTournamentRef = push(ref(db, "tournaments"));
       await set(newTournamentRef, { name, date, teamNames: { red, blue }, createdAt: Date.now() });
 
-      currentTournamentId = newTournamentRef.key;
-      localStorage.setItem("currentTournamentId", currentTournamentId);
+      currentTournamentId = null;
+      localStorage.removeItem("currentTournamentId");
       document.getElementById("tournamentName").value = "";
       document.getElementById("tournamentDate").value = "";
       activeMode = "current";
       document.getElementById("createTournamentSection").classList.add("hidden");
       document.getElementById("currentTournamentsSection").classList.remove("hidden");
-      document.getElementById("settingsSection").classList.remove("hidden");
+      document.getElementById("settingsSection").classList.add("hidden");
       render();
     };
 
@@ -532,7 +537,9 @@
       renderMatches();
       document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
       document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
-      if (activeMode === "current") document.getElementById("settingsSection").classList.toggle("hidden", !currentTournamentId);
+      if (activeMode === "current" && !currentTournamentId) {
+        document.getElementById("settingsSection").classList.add("hidden");
+      }
     }
   </script>
 </body>
