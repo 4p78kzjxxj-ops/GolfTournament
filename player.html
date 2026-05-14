@@ -203,11 +203,6 @@
       font-size: 15px;
     }
 
-    .winner-bar:first-child {
-      margin-top: 0;
-      margin-bottom: 16px;
-    }
-
     .winner-red {
       background: rgba(220, 38, 38, 0.18);
       border: 1px solid rgba(220, 38, 38, 0.35);
@@ -400,7 +395,10 @@
 
       content.innerHTML = `
         <div class="card">
-          <div class="winner-bar ${tournamentLead.className}">${tournamentLead.text}</div>
+
+          <div class="winner-bar ${tournamentLead.className}">
+            ${tournamentLead.text}
+          </div>
 
           <div class="hole-title-wrap">
             <div>
@@ -420,4 +418,244 @@
                 <div class="score-display" id="redScore">${escapeHtml(redScore)}</div>
 
                 <button class="green-btn" onclick="changeScore('redScore', 1)">+</button>
-             
+              </div>
+            </div>
+
+            <div class="score-team blue">
+              <label>Blue Team Score</label>
+
+              <div class="score-control">
+                <button class="gray-btn" onclick="changeScore('blueScore', -1)">−</button>
+
+                <div class="score-display" id="blueScore">${escapeHtml(blueScore)}</div>
+
+                <button class="green-btn" onclick="changeScore('blueScore', 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="save-btn" onclick="saveCurrentHole()">Save Hole ${currentHole}</button>
+
+          <div class="winner-bar ${winner.className}">${winner.text}</div>
+
+          <div class="nav-grid">
+            <button class="gray-btn" onclick="previousHole()">Previous Hole</button>
+            <button class="green-btn" onclick="nextHole()">Next Hole</button>
+          </div>
+
+          <button class="gray-btn" style="width:100%; margin-top:10px;" onclick="backToMatches()">Back to Match List</button>
+        </div>
+      `;
+    }
+
+    function getTournamentMatchLead(tournament) {
+      let redMatches = 0;
+      let blueMatches = 0;
+
+      Object.values(tournament.matches || {}).forEach(match => {
+        let redHoles = 0;
+        let blueHoles = 0;
+
+        Object.values(match.holes || {}).forEach(hole => {
+          const red = Number(hole?.redScore || 0);
+          const blue = Number(hole?.blueScore || 0);
+
+          if (!red || !blue) return;
+
+          if (red < blue) redHoles++;
+          if (blue < red) blueHoles++;
+        });
+
+        if (redHoles > blueHoles) redMatches++;
+        if (blueHoles > redHoles) blueMatches++;
+      });
+
+      if (redMatches > blueMatches) {
+        return {
+          className: "winner-red",
+          text: `Red currently leads matches ${redMatches}-${blueMatches}`
+        };
+      }
+
+      if (blueMatches > redMatches) {
+        return {
+          className: "winner-blue",
+          text: `Blue currently leads matches ${blueMatches}-${redMatches}`
+        };
+      }
+
+      return {
+        className: "winner-tie",
+        text: `Matches currently tied ${redMatches}-${blueMatches}`
+      };
+    }
+
+    window.changeScore = function(id, amount) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const current = Number(el.textContent || 4);
+      const next = Math.max(1, Math.min(20, current + amount));
+
+      el.textContent = next;
+    };
+
+    window.selectMatch = function(key) {
+      selectedMatchKey = key;
+      currentHole = getFirstOpenHole(playerMatches.find(item => item.key === key)?.match || {});
+      render();
+    };
+
+    window.backToMatches = function() {
+      selectedMatchKey = null;
+      currentHole = 1;
+      render();
+    };
+
+    window.previousHole = async function() {
+      await saveCurrentHole(false);
+      currentHole = Math.max(1, currentHole - 1);
+      render();
+    };
+
+    window.nextHole = async function() {
+      await saveCurrentHole(false);
+      currentHole = Math.min(18, currentHole + 1);
+      render();
+    };
+
+    window.saveCurrentHole = async function(showAlert = true) {
+      const matchData = playerMatches.find(item => item.key === selectedMatchKey);
+      if (!matchData) return;
+
+      const redScore = document.getElementById("redScore")?.textContent.trim();
+      const blueScore = document.getElementById("blueScore")?.textContent.trim();
+
+      const redNum = Number(redScore);
+      const blueNum = Number(blueScore);
+
+      if (redNum < 1 || blueNum < 1) {
+        alert("Scores must be greater than 0.");
+        return;
+      }
+
+      await update(ref(db, `tournaments/${matchData.tournamentId}/matches/${matchData.matchId}/holes/${currentHole}`), {
+        redScore: redNum,
+        blueScore: blueNum
+      });
+
+      if (showAlert) {
+        alert(`Hole ${currentHole} saved.`);
+      }
+    };
+
+    function findPlayerMatches(code) {
+      if (!/^\d{4}$/.test(code)) return [];
+
+      const results = [];
+
+      for (const [tournamentId, tournament] of Object.entries(tournaments)) {
+        const players = tournament.players || {};
+        const matches = tournament.matches || {};
+
+        let matchingPlayer = null;
+
+        for (const [playerId, player] of Object.entries(players)) {
+          if (player.code === code) {
+            matchingPlayer = { id: playerId, ...player };
+            break;
+          }
+        }
+
+        if (!matchingPlayer) continue;
+
+        for (const [matchId, match] of Object.entries(matches)) {
+          const ids = [...(match.red || []), ...(match.blue || [])];
+
+          if (!ids.includes(matchingPlayer.id)) continue;
+
+          results.push({
+            key: `${tournamentId}_${matchId}`,
+            tournamentId,
+            tournament,
+            matchId,
+            match,
+            player: matchingPlayer
+          });
+        }
+      }
+
+      return results.sort((a, b) => (a.match.createdAt || 0) - (b.match.createdAt || 0));
+    }
+
+    function getFirstOpenHole(match) {
+      for (let i = 1; i <= 18; i++) {
+        const hole = match.holes?.[i] || {};
+        if (!hole.redScore || !hole.blueScore) return i;
+      }
+      return 18;
+    }
+
+    function getMatchProgress(match) {
+      let scored = 0;
+
+      Object.values(match.holes || {}).forEach(hole => {
+        if (hole?.redScore && hole?.blueScore) scored++;
+      });
+
+      return `${scored}/18 Scored`;
+    }
+
+    function getHoleWinnerText(redScore, blueScore) {
+      if (!redScore || !blueScore) {
+        return {
+          className: "winner-tie",
+          text: "Waiting for scores"
+        };
+      }
+
+      const red = Number(redScore);
+      const blue = Number(blueScore);
+
+      if (red < blue) {
+        return {
+          className: "winner-red",
+          text: "Red Team Wins Hole"
+        };
+      }
+
+      if (blue < red) {
+        return {
+          className: "winner-blue",
+          text: "Blue Team Wins Hole"
+        };
+      }
+
+      return {
+        className: "winner-tie",
+        text: "Hole Tied"
+      };
+    }
+
+    function showError(message) {
+      content.innerHTML = `
+        <div class="card empty-state">
+          <h2>Match Not Found</h2>
+          <div class="muted">${escapeHtml(message)}</div>
+
+          <a href="index.html" class="back-btn">Back to Home</a>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
