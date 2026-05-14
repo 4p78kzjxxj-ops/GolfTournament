@@ -142,27 +142,21 @@
           <div id="tournamentEditBox"></div>
         </div>
 
-        <div class="grid two">
-          <div class="card">
-            <h2>Add Player</h2>
-            <label>Player Name</label>
-            <input id="playerName" placeholder="Player Name" />
-            <label>Team</label>
-            <select id="playerTeam"></select>
-            <label>4 Digit Player Code</label>
-            <input id="playerCode" maxlength="4" inputmode="numeric" placeholder="1234" oninput="cleanPlayerCode()" />
-            <div class="button-row"><button class="green-btn" onclick="addPlayer()">Add Player</button></div>
-          </div>
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <h2 style="margin-bottom:4px;">Players</h2>
+              <div class="muted">Players are hidden by default.</div>
+            </div>
 
-          <div class="card">
-            <div class="section-header">
-              <div>
-                <h2 style="margin-bottom:4px;">Players</h2>
-                <div class="muted">Players are hidden by default.</div>
-              </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="green-btn" onclick="promptAddPlayer()">Add Player</button>
               <button id="togglePlayersBtn" class="blue-btn" onclick="togglePlayers()">View Players</button>
             </div>
-            <div id="playersPanel" class="hidden"><div id="playerList"></div></div>
+          </div>
+
+          <div id="playersPanel" class="hidden">
+            <div id="playerList"></div>
           </div>
         </div>
 
@@ -295,11 +289,6 @@
       render();
     };
 
-    window.cleanPlayerCode = function() {
-      const input = document.getElementById("playerCode");
-      input.value = input.value.replace(/\D/g, "").slice(0, 4);
-    };
-
     window.cleanEditPlayerCode = function(playerId) {
       const input = document.getElementById(`edit-code-${playerId}`);
       input.value = input.value.replace(/\D/g, "").slice(0, 4);
@@ -352,21 +341,87 @@
       }
     };
 
-    window.addPlayer = async function() {
+    window.addPlayer = async function(firstName, lastName, code, team) {
       const tournament = getCurrentTournament();
-      if (!tournament) return alert("Create or select a tournament first.");
-      const name = document.getElementById("playerName").value.trim();
-      const team = document.getElementById("playerTeam").value;
-      const code = document.getElementById("playerCode").value.trim();
-      if (!name) return alert("Enter a player name.");
-      if (!/^\d{4}$/.test(code)) return alert("Player code must be exactly 4 digits.");
+
+      if (!tournament) {
+        alert("Create or select a tournament first.");
+        return;
+      }
+
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      if (!firstName || !lastName) {
+        alert("Enter first and last name.");
+        return;
+      }
+
+      if (!/^\d{4}$/.test(code)) {
+        alert("Player code must be exactly 4 digits.");
+        return;
+      }
+
       const existingPlayers = getPlayersArray(tournament);
-      if (existingPlayers.some(player => player.code === code)) return alert("That player code already exists.");
+
+      if (existingPlayers.some(player => player.code === code)) {
+        alert("That player code already exists.");
+        return;
+      }
 
       const newPlayerRef = push(ref(db, `tournaments/${currentTournamentId}/players`));
-      await set(newPlayerRef, { name, team, code, createdAt: Date.now() });
-      document.getElementById("playerName").value = "";
-      document.getElementById("playerCode").value = "";
+
+      await set(newPlayerRef, {
+        name: fullName,
+        firstName,
+        lastName,
+        team,
+        code,
+        createdAt: Date.now()
+      });
+    };
+
+    window.promptAddPlayer = async function() {
+      const tournament = getCurrentTournament();
+
+      if (!tournament) {
+        alert("Select a tournament first.");
+        return;
+      }
+
+      const firstName = prompt("First Name:");
+      if (firstName === null) return;
+
+      const lastName = prompt("Last Name:");
+      if (lastName === null) return;
+
+      const code = prompt("4 Digit Player Code:");
+      if (code === null) return;
+
+      if (!/^\d{4}$/.test(code.trim())) {
+        alert("Player code must be exactly 4 digits.");
+        return;
+      }
+
+      const teamChoice = prompt(
+        `Enter Team:\n\n1 = ${redTeamName()}\n2 = ${blueTeamName()}`
+      );
+
+      if (teamChoice === null) return;
+
+      let team = "Unassigned";
+
+      if (teamChoice === "1") {
+        team = "Red";
+      } else if (teamChoice === "2") {
+        team = "Blue";
+      }
+
+      await addPlayer(
+        firstName.trim(),
+        lastName.trim(),
+        code.trim(),
+        team
+      );
     };
 
     window.savePlayerEdits = async function(playerId) {
@@ -491,9 +546,6 @@
     }
 
     function renderTeamSelectors() {
-      const select = document.getElementById("playerTeam");
-      const current = select.value || "Unassigned";
-      select.innerHTML = teamOptionsHtml(current);
       document.getElementById("red1Label").textContent = `${redTeamName()} Player 1`;
       document.getElementById("red2Label").textContent = `${redTeamName()} Player 2`;
       document.getElementById("blue1Label").textContent = `${blueTeamName()} Player 1`;
