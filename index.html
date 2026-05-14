@@ -3,712 +3,298 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Golf Tournament Manager</title>
+  <title>Golf Tournament</title>
 
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --card2: #1f2937;
-      --text: #f9fafb;
-      --muted: #9ca3af;
+      --bg: #07130f;
+      --card: #101c17;
+      --card2: #16251f;
+      --text: #f8fafc;
+      --muted: #a7b3ad;
       --green: #16a34a;
-      --red: #dc2626;
-      --blue: #2563eb;
-      --gold: #f59e0b;
-      --border: #374151;
+      --green2: #22c55e;
+      --gold: #f5c542;
+      --border: rgba(255,255,255,0.12);
+      --danger: #dc2626;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #064e3b 0%, var(--bg) 230px);
       color: var(--text);
-      padding-bottom: 80px;
+      background:
+        radial-gradient(circle at top, rgba(34, 197, 94, 0.28), transparent 34%),
+        linear-gradient(180deg, #06351f 0%, var(--bg) 48%, #020617 100%);
     }
 
-    header {
-      padding: 22px 16px 14px;
+    .page {
+      width: min(960px, 100%);
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+    }
+
+    .hero {
+      min-height: 76vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
     }
 
-    header h1 {
+    .hero-card {
+      width: 100%;
+      background: rgba(16, 28, 23, 0.84);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 28px 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo-mark {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), #fff2a8);
+      color: #14210f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      box-shadow: 0 12px 28px rgba(245, 197, 66, 0.22);
+    }
+
+    h1 {
       margin: 0;
-      font-size: 28px;
-      letter-spacing: 0.5px;
+      font-size: clamp(34px, 8vw, 62px);
+      line-height: 0.95;
+      letter-spacing: -1.8px;
     }
 
-    header p {
-      margin: 6px 0 0;
+    .subtitle {
+      max-width: 620px;
+      margin: 14px auto 0;
       color: #d1fae5;
-      font-size: 14px;
+      font-size: clamp(15px, 3.8vw, 18px);
+      line-height: 1.5;
     }
 
-    .container {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 0 14px;
-    }
-
-    .tabs {
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    .actions {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      padding: 10px 14px;
-      background: rgba(15, 23, 42, 0.96);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      margin: 28px auto 0;
+      max-width: 430px;
     }
 
-    .tab-btn, button {
+    button, .button-link {
       border: 0;
-      border-radius: 12px;
-      padding: 11px 10px;
-      background: var(--card2);
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      padding: 14px 18px;
+      border-radius: 18px;
       color: var(--text);
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 850;
+      text-decoration: none;
       cursor: pointer;
     }
 
-    .tab-btn.active { background: var(--green); }
-    button:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    section { display: none; }
-    section.active { display: block; }
-
-    .card {
-      background: rgba(17, 24, 39, 0.94);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      margin: 14px 0;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    .player-btn {
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      box-shadow: 0 14px 28px rgba(22, 163, 74, 0.25);
     }
 
-    .card h2, .card h3 { margin-top: 0; }
+    .admin-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0,0,0,0.68);
+      z-index: 50;
+    }
+
+    .modal-backdrop.show { display: flex; }
+
+    .modal {
+      width: min(430px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+    }
+
+    .modal h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .modal p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
 
     label {
       display: block;
       color: var(--muted);
       font-size: 13px;
+      font-weight: 800;
       margin: 12px 0 6px;
-      font-weight: 700;
     }
 
-    input, select, textarea {
+    input {
       width: 100%;
-      padding: 12px;
-      border-radius: 12px;
+      min-height: 58px;
+      border-radius: 16px;
       border: 1px solid var(--border);
       background: #020617;
       color: var(--text);
-      font-size: 16px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 9px;
+      padding: 10px 12px;
     }
 
-    .grid { display: grid; gap: 10px; }
-    .grid.two { grid-template-columns: repeat(2, 1fr); }
-    .grid.four { grid-template-columns: repeat(4, 1fr); }
-
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
       margin-top: 14px;
     }
 
-    .primary { background: var(--green); }
-    .danger { background: var(--red); }
-    .blue { background: var(--blue); }
-    .gold { background: var(--gold); color: #111827; }
+    .cancel-btn { background: #334155; }
+    .go-btn { background: var(--green); }
 
-    .list-item {
-      padding: 12px;
-      border: 1px solid var(--border);
+    .error {
+      display: none;
+      margin-top: 10px;
+      color: #fecaca;
+      background: rgba(220, 38, 38, 0.16);
+      border: 1px solid rgba(220, 38, 38, 0.34);
       border-radius: 14px;
-      background: #020617;
-      margin-top: 8px;
+      padding: 10px;
+      font-size: 14px;
     }
 
-    .muted { color: var(--muted); }
-    .small { font-size: 12px; color: var(--muted); }
+    .error.show { display: block; }
 
-    .status {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(22, 163, 74, 0.18);
-      border: 1px solid rgba(22, 163, 74, 0.35);
-      font-size: 12px;
-      color: #bbf7d0;
-    }
-
-    .match-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .score-badge {
-      border-radius: 999px;
-      padding: 7px 11px;
-      background: var(--card2);
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .team-box {
-      padding: 12px;
-      border-radius: 14px;
-      background: #020617;
-      border: 1px solid var(--border);
-    }
-
-    .team-a { border-left: 5px solid var(--red); }
-    .team-b { border-left: 5px solid var(--blue); }
-
-    .holes {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .hole-btn {
-      min-height: 54px;
-      border: 1px solid var(--border);
-      background: #020617;
-      font-size: 13px;
-    }
-
-    .hole-btn.redWin { background: rgba(220, 38, 38, 0.42); }
-    .hole-btn.blueWin { background: rgba(37, 99, 235, 0.42); }
-    .hole-btn.tie { background: rgba(245, 158, 11, 0.38); color: #111827; }
-
-    @media (max-width: 640px) {
-      header h1 { font-size: 24px; }
-      .tabs { grid-template-columns: repeat(2, 1fr); }
-      .grid.two, .grid.four { grid-template-columns: 1fr; }
-      .match-header { align-items: flex-start; flex-direction: column; }
-      .holes { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 720px) {
+      .hero-card { padding: 46px 34px; }
+      .actions { grid-template-columns: 1fr 1fr; max-width: 620px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Golf Tournament Manager</h1>
-    <p>Create tournaments, add players, build 2v2 matches, and score best ball.</p>
-    <span id="connectionStatus" class="status">Connecting to Firebase...</span>
-  </header>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="logo-mark">⛳</div>
+        <h1>Golf Tournament</h1>
+        <p class="subtitle">
+          Live tournament scoring for 2v2 best ball matches. Players can enter their 4-digit code to jump straight to their match.
+        </p>
 
-  <nav class="tabs">
-    <button class="tab-btn active" onclick="showTab(event, 'tournaments')">Tournaments</button>
-    <button class="tab-btn" onclick="showTab(event, 'players')">Players</button>
-    <button class="tab-btn" onclick="showTab(event, 'matches')">Matches</button>
-    <button class="tab-btn" onclick="showTab(event, 'scoreboard')">Scoreboard</button>
-  </nav>
-
-  <main class="container">
-    <section id="tournaments" class="active">
-      <div class="card">
-        <h2>Create New Tournament</h2>
-        <label>Tournament Name</label>
-        <input id="tournamentName" placeholder="Spring Classic 2026" />
-
-        <label>Date</label>
-        <input id="tournamentDate" type="date" />
-
-        <div class="btn-row">
-          <button class="primary" onclick="createTournament()">Create Tournament</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Current Tournament</h2>
-        <div id="currentTournamentBox" class="muted">No tournament selected.</div>
-      </div>
-
-      <div class="card">
-        <h2>Saved Tournaments</h2>
-        <div id="tournamentList"></div>
-      </div>
-    </section>
-
-    <section id="players">
-      <div class="card">
-        <h2>Add Player</h2>
-        <label>Player Name</label>
-        <input id="playerName" placeholder="Player name" />
-
-        <label>Team</label>
-        <select id="playerTeam">
-          <option value="Red">Red Team</option>
-          <option value="Blue">Blue Team</option>
-          <option value="Unassigned">Unassigned</option>
-        </select>
-
-        <div class="btn-row">
-          <button class="primary" onclick="addPlayer()">Add Player</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Players</h2>
-        <div id="playerList"></div>
-      </div>
-    </section>
-
-    <section id="matches">
-      <div class="card">
-        <h2>Create 2v2 Match</h2>
-        <div class="grid four">
-          <div>
-            <label>Red Player 1</label>
-            <select id="red1"></select>
-          </div>
-          <div>
-            <label>Red Player 2</label>
-            <select id="red2"></select>
-          </div>
-          <div>
-            <label>Blue Player 1</label>
-            <select id="blue1"></select>
-          </div>
-          <div>
-            <label>Blue Player 2</label>
-            <select id="blue2"></select>
-          </div>
+        <div class="actions">
+          <button class="player-btn" onclick="openPlayerModal()">I'm a Player</button>
+          <a class="button-link admin-btn" href="admin.html">Admin Setup</a>
         </div>
 
-        <label>Match Notes</label>
-        <input id="matchNotes" placeholder="Front 9, Back 9, Match 1, etc." />
-
-        <div class="btn-row">
-          <button class="primary" onclick="createMatch()">Create Match</button>
+        <div class="footer-note">
+          Admin setup is protected by a code on the admin page.
         </div>
-      </div>
-
-      <div class="card">
-        <h2>Matches</h2>
-        <div id="matchList"></div>
-      </div>
-    </section>
-
-    <section id="scoreboard">
-      <div class="card">
-        <h2>Live Scoreboard</h2>
-        <div id="scoreboardList"></div>
       </div>
     </section>
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      push,
-      set,
-      update,
-      remove,
-      onValue,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  <div id="playerModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Enter Player Code</h2>
+      <p>Enter your 4-digit player ID to open your match scorecard.</p>
 
-    const firebaseConfig = {
-      apiKey: "PASTE_YOUR_API_KEY_HERE",
-      authDomain: "golftournament-44a54.firebaseapp.com",
-      databaseURL: "https://golftournament-44a54-default-rtdb.firebaseio.com",
-      projectId: "golftournament-44a54",
-      storageBucket: "golftournament-44a54.firebasestorage.app",
-      messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
-      appId: "PASTE_YOUR_APP_ID_HERE"
-    };
+      <label for="playerCode">Player ID</label>
+      <input
+        id="playerCode"
+        type="tel"
+        inputmode="numeric"
+        maxlength="4"
+        autocomplete="one-time-code"
+        placeholder="0000"
+        oninput="cleanPlayerCode()"
+        onkeydown="submitPlayerCodeOnEnter(event)"
+      />
 
-    const firebaseApp = initializeApp(firebaseConfig);
-    const db = getDatabase(firebaseApp);
+      <div id="codeError" class="error">Enter a valid 4-digit player code.</div>
 
-    let tournaments = {};
-    let currentTournamentId = localStorage.getItem("currentTournamentId") || null;
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closePlayerModal()">Cancel</button>
+        <button class="go-btn" onclick="goToPlayerMatch()">Continue</button>
+      </div>
+    </div>
+  </div>
 
-    const connectionStatus = document.getElementById("connectionStatus");
+  <script>
+    function openPlayerModal() {
+      document.getElementById("playerModal").classList.add("show");
+      document.getElementById("playerCode").value = "";
+      document.getElementById("codeError").classList.remove("show");
+      setTimeout(() => document.getElementById("playerCode").focus(), 100);
+    }
 
-    onValue(ref(db, ".info/connected"), snapshot => {
-      connectionStatus.textContent = snapshot.val() ? "Connected to Firebase" : "Disconnected";
+    function closePlayerModal() {
+      document.getElementById("playerModal").classList.remove("show");
+    }
+
+    function cleanPlayerCode() {
+      const input = document.getElementById("playerCode");
+      input.value = input.value.replace(/\D/g, "").slice(0, 4);
+      document.getElementById("codeError").classList.remove("show");
+    }
+
+    function submitPlayerCodeOnEnter(event) {
+      if (event.key === "Enter") {
+        goToPlayerMatch();
+      }
+    }
+
+    function goToPlayerMatch() {
+      const code = document.getElementById("playerCode").value.trim();
+
+      if (!/^\d{4}$/.test(code)) {
+        document.getElementById("codeError").classList.add("show");
+        return;
+      }
+
+      window.location.href = `player.html?code=${encodeURIComponent(code)}`;
+    }
+
+    document.getElementById("playerModal").addEventListener("click", function(event) {
+      if (event.target.id === "playerModal") {
+        closePlayerModal();
+      }
     });
-
-    onValue(ref(db, "tournaments"), snapshot => {
-      tournaments = snapshot.val() || {};
-
-      if (currentTournamentId && !tournaments[currentTournamentId]) {
-        currentTournamentId = null;
-        localStorage.removeItem("currentTournamentId");
-      }
-
-      render();
-    });
-
-    function getCurrentTournament() {
-      if (!currentTournamentId) return null;
-      return tournaments[currentTournamentId] || null;
-    }
-
-    function getTournamentArray() {
-      return Object.entries(tournaments).map(([id, tournament]) => ({
-        id,
-        ...tournament,
-        players: tournament.players || {},
-        matches: tournament.matches || {}
-      })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    }
-
-    function getPlayersArray(tournament) {
-      if (!tournament || !tournament.players) return [];
-      return Object.entries(tournament.players).map(([id, player]) => ({ id, ...player }));
-    }
-
-    function getMatchesArray(tournament) {
-      if (!tournament || !tournament.matches) return [];
-      return Object.entries(tournament.matches).map(([id, match]) => ({ id, ...match }));
-    }
-
-    window.showTab = function(event, id) {
-      document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
-      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      event.target.classList.add("active");
-    };
-
-    window.createTournament = async function() {
-      const name = document.getElementById("tournamentName").value.trim();
-      const date = document.getElementById("tournamentDate").value;
-
-      if (!name) return alert("Enter a tournament name.");
-
-      const newRef = push(ref(db, "tournaments"));
-
-      await set(newRef, {
-        name,
-        date,
-        createdAt: Date.now()
-      });
-
-      currentTournamentId = newRef.key;
-      localStorage.setItem("currentTournamentId", currentTournamentId);
-
-      document.getElementById("tournamentName").value = "";
-      document.getElementById("tournamentDate").value = "";
-    };
-
-    window.selectTournament = function(id) {
-      currentTournamentId = id;
-      localStorage.setItem("currentTournamentId", id);
-      render();
-    };
-
-    window.deleteTournament = async function(id) {
-      if (!confirm("Delete this tournament and all players/matches?")) return;
-      await remove(ref(db, `tournaments/${id}`));
-
-      if (currentTournamentId === id) {
-        currentTournamentId = null;
-        localStorage.removeItem("currentTournamentId");
-      }
-    };
-
-    window.addPlayer = async function() {
-      const tournament = getCurrentTournament();
-      if (!tournament) return alert("Create or select a tournament first.");
-
-      const name = document.getElementById("playerName").value.trim();
-      const team = document.getElementById("playerTeam").value;
-
-      if (!name) return alert("Enter a player name.");
-
-      const newPlayerRef = push(ref(db, `tournaments/${currentTournamentId}/players`));
-
-      await set(newPlayerRef, {
-        name,
-        team,
-        createdAt: Date.now()
-      });
-
-      document.getElementById("playerName").value = "";
-    };
-
-    window.deletePlayer = async function(playerId) {
-      const tournament = getCurrentTournament();
-      if (!tournament) return;
-
-      const matches = getMatchesArray(tournament);
-      const playerIsInMatch = matches.some(match => {
-        const allPlayers = [...(match.red || []), ...(match.blue || [])];
-        return allPlayers.includes(playerId);
-      });
-
-      if (playerIsInMatch) {
-        alert("This player is already in a match. Delete the match first.");
-        return;
-      }
-
-      await remove(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`));
-    };
-
-    window.createMatch = async function() {
-      const tournament = getCurrentTournament();
-      if (!tournament) return alert("Create or select a tournament first.");
-
-      const red1 = document.getElementById("red1").value;
-      const red2 = document.getElementById("red2").value;
-      const blue1 = document.getElementById("blue1").value;
-      const blue2 = document.getElementById("blue2").value;
-      const selectedPlayers = [red1, red2, blue1, blue2];
-
-      if (selectedPlayers.some(id => !id)) return alert("Select all 4 players.");
-      if (new Set(selectedPlayers).size !== 4) return alert("Each player can only be selected once in a match.");
-
-      const newMatchRef = push(ref(db, `tournaments/${currentTournamentId}/matches`));
-
-      const holes = {};
-      for (let i = 1; i <= 18; i++) {
-        holes[i] = "";
-      }
-
-      await set(newMatchRef, {
-        red: [red1, red2],
-        blue: [blue1, blue2],
-        notes: document.getElementById("matchNotes").value.trim(),
-        holes,
-        createdAt: Date.now()
-      });
-
-      document.getElementById("matchNotes").value = "";
-    };
-
-    window.deleteMatch = async function(matchId) {
-      if (!confirm("Delete this match?")) return;
-      await remove(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}`));
-    };
-
-    window.cycleHole = async function(matchId, holeNumber) {
-      const tournament = getCurrentTournament();
-      const match = tournament?.matches?.[matchId];
-      if (!match) return;
-
-      const current = match.holes?.[holeNumber] || "";
-      const order = ["", "red", "blue", "tie"];
-      const next = order[(order.indexOf(current) + 1) % order.length];
-
-      await set(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}/holes/${holeNumber}`), next);
-    };
-
-    function calculateMatchScore(match) {
-      let redWins = 0;
-      let blueWins = 0;
-
-      const holes = match.holes || {};
-      Object.values(holes).forEach(result => {
-        if (result === "red") redWins++;
-        if (result === "blue") blueWins++;
-      });
-
-      const diff = redWins - blueWins;
-      if (diff === 0) return "All Square";
-      return diff > 0 ? `Red ${diff} Up` : `Blue ${Math.abs(diff)} Up`;
-    }
-
-    function playerName(playerId) {
-      const tournament = getCurrentTournament();
-      const player = tournament?.players?.[playerId];
-      return player?.name || "Unknown";
-    }
-
-    function renderCurrentTournament() {
-      const box = document.getElementById("currentTournamentBox");
-      const tournament = getCurrentTournament();
-
-      if (!tournament) {
-        box.innerHTML = "No tournament selected.";
-        return;
-      }
-
-      const players = getPlayersArray(tournament);
-      const matches = getMatchesArray(tournament);
-
-      box.innerHTML = `
-        <strong>${escapeHtml(tournament.name)}</strong><br />
-        <span class="muted">${tournament.date || "No date"} · ${players.length} players · ${matches.length} matches</span>
-      `;
-    }
-
-    function renderTournamentList() {
-      const box = document.getElementById("tournamentList");
-      const list = getTournamentArray();
-
-      if (!list.length) {
-        box.innerHTML = '<p class="muted">No tournaments yet.</p>';
-        return;
-      }
-
-      box.innerHTML = list.map(tournament => {
-        const playerCount = Object.keys(tournament.players || {}).length;
-        const matchCount = Object.keys(tournament.matches || {}).length;
-        const activeLabel = tournament.id === currentTournamentId ? "Current" : "Open";
-
-        return `
-          <div class="list-item">
-            <strong>${escapeHtml(tournament.name)}</strong><br />
-            <span class="muted">${tournament.date || "No date"} · ${playerCount} players · ${matchCount} matches</span>
-            <div class="btn-row">
-              <button class="blue" onclick="selectTournament('${tournament.id}')">${activeLabel}</button>
-              <button class="danger" onclick="deleteTournament('${tournament.id}')">Delete</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function renderPlayers() {
-      const box = document.getElementById("playerList");
-      const tournament = getCurrentTournament();
-      const players = getPlayersArray(tournament);
-
-      if (!tournament) {
-        box.innerHTML = '<p class="muted">Create or select a tournament first.</p>';
-        return;
-      }
-
-      if (!players.length) {
-        box.innerHTML = '<p class="muted">No players added yet.</p>';
-        return;
-      }
-
-      box.innerHTML = players.map(player => `
-        <div class="list-item">
-          <strong>${escapeHtml(player.name)}</strong><br />
-          <span class="muted">${escapeHtml(player.team || "Unassigned")}</span>
-          <div class="btn-row">
-            <button class="danger" onclick="deletePlayer('${player.id}')">Delete</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function renderPlayerDropdowns() {
-      const tournament = getCurrentTournament();
-      const players = getPlayersArray(tournament);
-      const selects = ["red1", "red2", "blue1", "blue2"];
-
-      selects.forEach(id => {
-        const select = document.getElementById(id);
-        const oldValue = select.value;
-
-        select.innerHTML = '<option value="">Select Player</option>';
-
-        players.forEach(player => {
-          select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`;
-        });
-
-        select.value = oldValue;
-      });
-    }
-
-    function renderMatches() {
-      const tournament = getCurrentTournament();
-      const matches = getMatchesArray(tournament);
-      const matchList = document.getElementById("matchList");
-      const scoreboardList = document.getElementById("scoreboardList");
-
-      if (!tournament) {
-        matchList.innerHTML = '<p class="muted">Create or select a tournament first.</p>';
-        scoreboardList.innerHTML = '<p class="muted">Create or select a tournament first.</p>';
-        return;
-      }
-
-      if (!matches.length) {
-        matchList.innerHTML = '<p class="muted">No matches created yet.</p>';
-        scoreboardList.innerHTML = '<p class="muted">No matches created yet.</p>';
-        return;
-      }
-
-      matchList.innerHTML = matches.map((match, index) => matchCardHtml(match, index, true)).join("");
-      scoreboardList.innerHTML = matches.map((match, index) => matchCardHtml(match, index, false)).join("");
-    }
-
-    function matchCardHtml(match, index, editable) {
-      const redNames = (match.red || []).map(playerName).join(" / ");
-      const blueNames = (match.blue || []).map(playerName).join(" / ");
-
-      let holesHtml = "";
-      for (let i = 1; i <= 18; i++) {
-        const result = match.holes?.[i] || "";
-        const className = result === "red" ? "redWin" : result === "blue" ? "blueWin" : result === "tie" ? "tie" : "";
-        const label = result ? result.toUpperCase() : "-";
-
-        holesHtml += `
-          <button class="hole-btn ${className}" ${editable ? `onclick="cycleHole('${match.id}', ${i})"` : ""}>
-            Hole ${i}<br />
-            <strong>${label}</strong>
-          </button>
-        `;
-      }
-
-      return `
-        <div class="card">
-          <div class="match-header">
-            <div>
-              <h3>Match ${index + 1}</h3>
-              <div class="small">${escapeHtml(match.notes || "No notes")}</div>
-            </div>
-            <div class="score-badge">${calculateMatchScore(match)}</div>
-          </div>
-
-          <div class="grid two">
-            <div class="team-box team-a">
-              <strong>Red Team</strong><br />
-              ${escapeHtml(redNames)}
-            </div>
-            <div class="team-box team-b">
-              <strong>Blue Team</strong><br />
-              ${escapeHtml(blueNames)}
-            </div>
-          </div>
-
-          <div class="holes">${holesHtml}</div>
-
-          ${editable ? `
-            <p class="small">Tap a hole to cycle: Red win → Blue win → Tie → blank.</p>
-            <div class="btn-row">
-              <button class="danger" onclick="deleteMatch('${match.id}')">Delete Match</button>
-            </div>
-          ` : ""}
-        </div>
-      `;
-    }
-
-    function escapeHtml(value) {
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function render() {
-      renderCurrentTournament();
-      renderTournamentList();
-      renderPlayers();
-      renderPlayerDropdowns();
-      renderMatches();
-    }
   </script>
 </body>
 </html>
