@@ -181,7 +181,7 @@
 
     .matchup-vs {
       color: var(--muted);
-      margin: 0 6px;
+      margin: 8px 0;
       font-size: 13px;
       font-weight: 900;
     }
@@ -439,18 +439,18 @@
           </div>
 
           <div class="matchup-line">
-  <div class="matchup-red">
-    ${redPlayers.map(name => escapeHtml(name)).join(" / ")} (${totals.red})
-  </div>
+            <div class="matchup-red">
+              ${redPlayers.map(name => escapeHtml(name)).join(" / ")} (${totals.red})
+            </div>
 
-  <div class="matchup-vs" style="margin:8px 0;">
-    vs
-  </div>
+            <div class="matchup-vs">
+              vs
+            </div>
 
-  <div class="matchup-blue">
-    ${bluePlayers.map(name => escapeHtml(name)).join(" / ")} (${totals.blue})
-  </div>
-</div>
+            <div class="matchup-blue">
+              ${bluePlayers.map(name => escapeHtml(name)).join(" / ")} (${totals.blue})
+            </div>
+          </div>
 
           <div class="nine-label">Front 9</div>
           <div class="holes">
@@ -527,68 +527,60 @@
       return "score-tie";
     }
 
-    function calculateMatchStatus(match) {
-  let redWins = 0;
-  let blueWins = 0;
-  let completedHoles = 0;
-
-  for (let i = 1; i <= 18; i++) {
-    const hole = match.holes?.[i];
-    const redScore = hole?.redScore;
-    const blueScore = hole?.blueScore;
-
-    if (!redScore || !blueScore) continue;
-
-    completedHoles++;
-
-    if (Number(redScore) < Number(blueScore)) {
-      redWins++;
-    } else if (Number(blueScore) < Number(redScore)) {
-      blueWins++;
+    function calculateMatchCardClass(match) {
+      const winner = calculateMatchWinner(match);
+      if (winner === "red") return "match-red";
+      if (winner === "blue") return "match-blue";
+      return "match-tie";
     }
-  }
 
-  const diff = Math.abs(redWins - blueWins);
-  const leader = redWins > blueWins
-    ? "Red"
-    : blueWins > redWins
-    ? "Blue"
-    : null;
+    function calculateTeamTotals(match) {
+      let red = 0;
+      let blue = 0;
 
-  const holesRemaining = 18 - completedHoles;
+      Object.values(match.holes || {}).forEach(hole => {
+        if (hole?.redScore) red += Number(hole.redScore);
+        if (hole?.blueScore) blue += Number(hole.blueScore);
+      });
 
-  if (!leader) {
-    return holesRemaining === 0
-      ? "Match Tied"
-      : "All Square";
-  }
-
-  if (diff > holesRemaining) {
-    return `${leader} Wins ${diff} & ${holesRemaining}`;
-  }
-
-  return `${leader} ${diff} Up with ${holesRemaining} to go`;
-}
+      return { red, blue };
+    }
 
     function calculateMatchStatus(match) {
       let redWins = 0;
       let blueWins = 0;
+      let completedHoles = 0;
 
-      Object.values(match.holes || {}).forEach(hole => {
+      for (let i = 1; i <= 18; i++) {
+        const hole = match.holes?.[i];
         const redScore = hole?.redScore;
         const blueScore = hole?.blueScore;
 
-        if (!redScore || !blueScore) return;
+        if (!redScore || !blueScore) continue;
 
-        if (Number(redScore) < Number(blueScore)) redWins++;
-        if (Number(blueScore) < Number(redScore)) blueWins++;
-      });
+        completedHoles++;
 
-      const diff = redWins - blueWins;
+        if (Number(redScore) < Number(blueScore)) {
+          redWins++;
+        } else if (Number(blueScore) < Number(redScore)) {
+          blueWins++;
+        }
+      }
 
-      if (diff === 0) return "All Square";
-      if (diff > 0) return `Red ${diff} Up`;
-      return `Blue ${Math.abs(diff)} Up`;
+      const diff = Math.abs(redWins - blueWins);
+      const holesRemaining = 18 - completedHoles;
+
+      if (redWins === blueWins) {
+        return holesRemaining === 0 ? "Match Tied" : "All Square";
+      }
+
+      const leader = redWins > blueWins ? "Red" : "Blue";
+
+      if (diff > holesRemaining) {
+        return `${leader} Wins ${diff} & ${holesRemaining}`;
+      }
+
+      return `${leader} ${diff} Up with ${holesRemaining} to go`;
     }
 
     function playerName(playerId) {
