@@ -26,151 +26,209 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top, rgba(34, 197, 94, 0.18), transparent 30%),
-        linear-gradient(180deg, #06351f 0%, var(--bg) 45%, #020617 100%);
+        radial-gradient(circle at top, rgba(34, 197, 94, 0.14), transparent 26%),
+        linear-gradient(180deg, #06351f 0%, var(--bg) 42%, #020617 100%);
     }
 
     .page {
-      width: min(1100px, 100%);
+      width: min(980px, 100%);
       margin: 0 auto;
-      padding: 18px 14px 44px;
+      padding: 14px 10px 34px;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(30px, 7vw, 48px);
-      letter-spacing: -1px;
+      font-size: clamp(24px, 6vw, 38px);
+      letter-spacing: -0.8px;
+      line-height: 1;
     }
 
     .subtitle {
-      margin: 4px 0 0;
+      margin: 3px 0 0;
       color: #d1fae5;
+      font-size: 13px;
     }
 
     .status {
       display: inline-flex;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 999px;
       background: rgba(22, 163, 74, 0.18);
       border: 1px solid rgba(22, 163, 74, 0.35);
       color: #bbf7d0;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 800;
       white-space: nowrap;
     }
 
-    .card {
+    .card,
+    .match-card {
       background: rgba(16, 28, 23, 0.92);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      border-radius: 18px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 12px 34px rgba(0,0,0,0.24);
       backdrop-filter: blur(10px);
     }
 
     .matches {
       display: grid;
-      gap: 16px;
-    }
-
-    .match-card {
-      background: rgba(16, 28, 23, 0.92);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 16px;
-      box-shadow: 0 16px 50px rgba(0,0,0,0.24);
+      gap: 10px;
     }
 
     .match-header {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       align-items: flex-start;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .match-title {
-      font-size: 22px;
-      font-weight: 900;
+      font-size: 18px;
+      font-weight: 950;
+      line-height: 1.1;
+    }
+
+    .match-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
     .score-badge {
       border-radius: 999px;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: rgba(245, 197, 66, 0.14);
       border: 1px solid rgba(245, 197, 66, 0.26);
       color: #fde68a;
-      font-weight: 900;
+      font-weight: 950;
+      font-size: 13px;
       white-space: nowrap;
     }
 
     .team-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 8px;
     }
 
     .team-box {
       border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 14px;
       background: rgba(2, 6, 23, 0.78);
-      padding: 14px;
+      padding: 10px;
+      min-height: 76px;
     }
 
-    .red-team { border-left: 5px solid var(--red); }
-    .blue-team { border-left: 5px solid var(--blue); }
+    .red-team { border-left: 4px solid var(--red); }
+    .blue-team { border-left: 4px solid var(--blue); }
 
     .team-title {
-      font-weight: 900;
-      margin-bottom: 8px;
+      font-weight: 950;
+      margin-bottom: 5px;
+      font-size: 13px;
     }
 
     .player-list {
       display: grid;
-      gap: 6px;
+      gap: 3px;
       color: #e5e7eb;
+      font-size: 13px;
+      line-height: 1.2;
     }
 
     .holes {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      margin-top: 14px;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 7px;
+      margin-top: 10px;
     }
 
-    .hole {
-      border-radius: 14px;
+    .hole-bubble {
+      aspect-ratio: 1 / 1;
+      border-radius: 999px;
       border: 1px solid var(--border);
-      padding: 10px 8px;
-      background: rgba(2, 6, 23, 0.82);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      min-height: 74px;
+      background: rgba(2, 6, 23, 0.88);
+      min-width: 0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
     }
 
-    .hole-num {
-      font-size: 12px;
+    .hole-number {
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    .hole-result {
+      margin-top: 2px;
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .bubble-red {
+      background: var(--red);
+      border-color: rgba(255,255,255,0.24);
+      color: white;
+    }
+
+    .bubble-blue {
+      background: var(--blue);
+      border-color: rgba(255,255,255,0.24);
+      color: white;
+    }
+
+    .bubble-tie {
+      background: var(--gold);
+      border-color: rgba(255,255,255,0.24);
+      color: #111827;
+    }
+
+    .bubble-empty {
       color: var(--muted);
-      font-weight: 800;
     }
 
-    .hole-score {
-      margin-top: 4px;
-      font-size: 13px;
-      line-height: 1.35;
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    .winner-red { box-shadow: inset 0 -4px 0 var(--red); }
-    .winner-blue { box-shadow: inset 0 -4px 0 var(--blue); }
-    .winner-tie { box-shadow: inset 0 -4px 0 var(--gold); }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.red { background: var(--red); }
+    .dot.blue { background: var(--blue); }
+    .dot.gold { background: var(--gold); }
 
     .muted { color: var(--muted); }
 
@@ -178,18 +236,19 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 50px;
-      padding: 0 18px;
-      border-radius: 16px;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 14px;
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border);
       color: white;
       text-decoration: none;
-      font-weight: 800;
-      margin-top: 12px;
+      font-weight: 850;
+      margin-top: 10px;
+      font-size: 14px;
     }
 
-    @media (max-width: 840px) {
+    @media (max-width: 700px) {
       .topbar,
       .match-header {
         flex-direction: column;
@@ -197,11 +256,41 @@
       }
 
       .team-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
       }
 
       .holes {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+      }
+
+      .hole-number,
+      .hole-result {
+        font-size: 9px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .page {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .team-grid {
+        gap: 6px;
+      }
+
+      .team-box {
+        padding: 8px;
+        min-height: 70px;
+      }
+
+      .player-list {
+        font-size: 12px;
+      }
+
+      .holes {
+        grid-template-columns: repeat(6, 1fr);
       }
     }
   </style>
@@ -296,31 +385,37 @@
           <div class="match-header">
             <div>
               <div class="match-title">${escapeHtml(match.name || `Match ${index + 1}`)}</div>
-              <div class="muted">2v2 Best Ball</div>
+              <div class="match-subtitle">2v2 Best Ball</div>
             </div>
             <div class="score-badge">${escapeHtml(calculateMatchStatus(match))}</div>
           </div>
 
           <div class="team-grid">
             <div class="team-box red-team">
-              <div class="team-title">Red Team</div>
+              <div class="team-title">Red</div>
               <div class="player-list">${redPlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
             </div>
 
             <div class="team-box blue-team">
-              <div class="team-title">Blue Team</div>
+              <div class="team-title">Blue</div>
               <div class="player-list">${bluePlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
             </div>
           </div>
 
           <div class="holes">
-            ${renderHoles(match)}
+            ${renderHoleBubbles(match)}
+          </div>
+
+          <div class="legend">
+            <span class="legend-item"><span class="dot red"></span>Red won</span>
+            <span class="legend-item"><span class="dot blue"></span>Blue won</span>
+            <span class="legend-item"><span class="dot gold"></span>Tie</span>
           </div>
         </div>
       `;
     }
 
-    function renderHoles(match) {
+    function renderHoleBubbles(match) {
       let html = "";
 
       for (let i = 1; i <= 18; i++) {
@@ -328,26 +423,26 @@
         const redScore = hole.redScore || "";
         const blueScore = hole.blueScore || "";
 
-        let winnerClass = "";
-        let resultText = "Not scored";
+        let bubbleClass = "bubble-empty";
+        let resultText = "-";
 
         if (redScore && blueScore) {
           if (Number(redScore) < Number(blueScore)) {
-            winnerClass = "winner-red";
-            resultText = `Red ${redScore}-${blueScore}`;
+            bubbleClass = "bubble-red";
+            resultText = `${redScore}-${blueScore}`;
           } else if (Number(blueScore) < Number(redScore)) {
-            winnerClass = "winner-blue";
-            resultText = `Blue ${blueScore}-${redScore}`;
+            bubbleClass = "bubble-blue";
+            resultText = `${blueScore}-${redScore}`;
           } else {
-            winnerClass = "winner-tie";
-            resultText = `Tie ${redScore}-${blueScore}`;
+            bubbleClass = "bubble-tie";
+            resultText = `${redScore}-${blueScore}`;
           }
         }
 
         html += `
-          <div class="hole ${winnerClass}">
-            <div class="hole-num">Hole ${i}</div>
-            <div class="hole-score">${escapeHtml(resultText)}</div>
+          <div class="hole-bubble ${bubbleClass}" title="Hole ${i}">
+            <div class="hole-number">${i}</div>
+            <div class="hole-result">${escapeHtml(resultText)}</div>
           </div>
         `;
       }
