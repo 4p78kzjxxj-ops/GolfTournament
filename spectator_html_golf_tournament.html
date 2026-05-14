@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spectator View</title>
+
+  <style>
+    :root {
+      --bg: #08110d;
+      --card: #101c17;
+      --text: #f8fafc;
+      --muted: #9ca3af;
+      --green: #16a34a;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --gold: #f5c542;
+      --border: rgba(255,255,255,0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(34, 197, 94, 0.18), transparent 30%),
+        linear-gradient(180deg, #06351f 0%, var(--bg) 45%, #020617 100%);
+    }
+
+    .page {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 44px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 7vw, 48px);
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: #d1fae5;
+    }
+
+    .status {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.18);
+      border: 1px solid rgba(22, 163, 74, 0.35);
+      color: #bbf7d0;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .card {
+      background: rgba(16, 28, 23, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .matches {
+      display: grid;
+      gap: 16px;
+    }
+
+    .match-card {
+      background: rgba(16, 28, 23, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.24);
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .match-title {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .score-badge {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(245, 197, 66, 0.14);
+      border: 1px solid rgba(245, 197, 66, 0.26);
+      color: #fde68a;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .team-box {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(2, 6, 23, 0.78);
+      padding: 14px;
+    }
+
+    .red-team { border-left: 5px solid var(--red); }
+    .blue-team { border-left: 5px solid var(--blue); }
+
+    .team-title {
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .player-list {
+      display: grid;
+      gap: 6px;
+      color: #e5e7eb;
+    }
+
+    .holes {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .hole {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 10px 8px;
+      background: rgba(2, 6, 23, 0.82);
+      text-align: center;
+      min-height: 74px;
+    }
+
+    .hole-num {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .hole-score {
+      margin-top: 4px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .winner-red { box-shadow: inset 0 -4px 0 var(--red); }
+    .winner-blue { box-shadow: inset 0 -4px 0 var(--blue); }
+    .winner-tie { box-shadow: inset 0 -4px 0 var(--gold); }
+
+    .muted { color: var(--muted); }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 0 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 840px) {
+      .topbar,
+      .match-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .holes {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <div>
+        <h1>Spectator View</h1>
+        <p id="subtitle" class="subtitle">Live tournament matches</p>
+      </div>
+      <div id="connectionStatus" class="status">Connecting...</div>
+    </div>
+
+    <div id="content"></div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY_HERE",
+      authDomain: "golftournament-44a54.firebaseapp.com",
+      databaseURL: "https://golftournament-44a54-default-rtdb.firebaseio.com",
+      projectId: "golftournament-44a54",
+      storageBucket: "golftournament-44a54.firebasestorage.app",
+      messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
+      appId: "PASTE_YOUR_APP_ID_HERE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const tournamentId = params.get("tournamentId") || "";
+
+    const content = document.getElementById("content");
+    const subtitle = document.getElementById("subtitle");
+    const connectionStatus = document.getElementById("connectionStatus");
+
+    let tournament = null;
+
+    onValue(ref(db, ".info/connected"), snapshot => {
+      connectionStatus.textContent = snapshot.val() ? "Live" : "Disconnected";
+    });
+
+    if (!tournamentId) {
+      showError("No tournament selected.");
+    } else {
+      onValue(ref(db, `tournaments/${tournamentId}`), snapshot => {
+        tournament = snapshot.val();
+        render();
+      });
+    }
+
+    function render() {
+      if (!tournament) {
+        showError("Tournament not found.");
+        return;
+      }
+
+      subtitle.textContent = `${tournament.name || "Tournament"}${tournament.date ? " · " + tournament.date : ""}`;
+
+      const matches = Object.entries(tournament.matches || {}).map(([id, match]) => ({ id, ...match }));
+
+      if (!matches.length) {
+        content.innerHTML = `
+          <div class="card">
+            <h2>No matches yet</h2>
+            <div class="muted">Matches will appear here after the admin creates them.</div>
+            <a href="index.html" class="back-btn">Back to Home</a>
+          </div>
+        `;
+        return;
+      }
+
+      content.innerHTML = `
+        <div class="matches">
+          ${matches.map((match, index) => renderMatch(match, index)).join("")}
+        </div>
+        <a href="index.html" class="back-btn">Back to Home</a>
+      `;
+    }
+
+    function renderMatch(match, index) {
+      const redPlayers = (match.red || []).map(playerName);
+      const bluePlayers = (match.blue || []).map(playerName);
+
+      return `
+        <div class="match-card">
+          <div class="match-header">
+            <div>
+              <div class="match-title">${escapeHtml(match.name || `Match ${index + 1}`)}</div>
+              <div class="muted">2v2 Best Ball</div>
+            </div>
+            <div class="score-badge">${escapeHtml(calculateMatchStatus(match))}</div>
+          </div>
+
+          <div class="team-grid">
+            <div class="team-box red-team">
+              <div class="team-title">Red Team</div>
+              <div class="player-list">${redPlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
+            </div>
+
+            <div class="team-box blue-team">
+              <div class="team-title">Blue Team</div>
+              <div class="player-list">${bluePlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
+            </div>
+          </div>
+
+          <div class="holes">
+            ${renderHoles(match)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHoles(match) {
+      let html = "";
+
+      for (let i = 1; i <= 18; i++) {
+        const hole = match.holes?.[i] || {};
+        const redScore = hole.redScore || "";
+        const blueScore = hole.blueScore || "";
+
+        let winnerClass = "";
+        let resultText = "Not scored";
+
+        if (redScore && blueScore) {
+          if (Number(redScore) < Number(blueScore)) {
+            winnerClass = "winner-red";
+            resultText = `Red ${redScore}-${blueScore}`;
+          } else if (Number(blueScore) < Number(redScore)) {
+            winnerClass = "winner-blue";
+            resultText = `Blue ${blueScore}-${redScore}`;
+          } else {
+            winnerClass = "winner-tie";
+            resultText = `Tie ${redScore}-${blueScore}`;
+          }
+        }
+
+        html += `
+          <div class="hole ${winnerClass}">
+            <div class="hole-num">Hole ${i}</div>
+            <div class="hole-score">${escapeHtml(resultText)}</div>
+          </div>
+        `;
+      }
+
+      return html;
+    }
+
+    function calculateMatchStatus(match) {
+      let redWins = 0;
+      let blueWins = 0;
+
+      Object.values(match.holes || {}).forEach(hole => {
+        const redScore = hole?.redScore;
+        const blueScore = hole?.blueScore;
+
+        if (!redScore || !blueScore) return;
+
+        if (Number(redScore) < Number(blueScore)) redWins++;
+        if (Number(blueScore) < Number(redScore)) blueWins++;
+      });
+
+      const diff = redWins - blueWins;
+
+      if (diff === 0) return "All Square";
+      if (diff > 0) return `Red ${diff} Up`;
+      return `Blue ${Math.abs(diff)} Up`;
+    }
+
+    function playerName(playerId) {
+      return tournament?.players?.[playerId]?.name || "Unknown Player";
+    }
+
+    function showError(message) {
+      content.innerHTML = `
+        <div class="card">
+          <h2>Unable to Load</h2>
+          <div class="muted">${escapeHtml(message)}</div>
+          <a href="index.html" class="back-btn">Back to Home</a>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
