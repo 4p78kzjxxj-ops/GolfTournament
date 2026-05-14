@@ -159,36 +159,31 @@
       color: #fde68a;
     }
 
-    .team-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .team-box {
-      border: 1px solid var(--border);
+    .matchup-line {
+      margin: 10px 0;
+      padding: 10px;
       border-radius: 14px;
       background: rgba(2, 6, 23, 0.72);
-      padding: 10px;
-      min-height: 58px;
-    }
-
-    .red-team { border-left: 4px solid var(--red); }
-    .blue-team { border-left: 4px solid var(--blue); }
-
-    .team-title {
+      border: 1px solid var(--border);
+      text-align: center;
+      font-size: 15px;
       font-weight: 950;
-      margin-bottom: 5px;
-      font-size: 13px;
+      line-height: 1.35;
     }
 
-    .player-list {
-      display: grid;
-      gap: 3px;
-      color: #e5e7eb;
+    .matchup-red {
+      color: #fecaca;
+    }
+
+    .matchup-blue {
+      color: #bfdbfe;
+    }
+
+    .matchup-vs {
+      color: var(--muted);
+      margin: 0 6px;
       font-size: 13px;
-      line-height: 1.2;
+      font-weight: 900;
     }
 
     .nine-label {
@@ -428,8 +423,8 @@
     }
 
     function renderMatch(match, index) {
-      const redPlayers = (match.red || []).map(playerName);
-      const bluePlayers = (match.blue || []).map(playerName);
+      const redPlayers = (match.red || []).map(playerLastName);
+      const bluePlayers = (match.blue || []).map(playerLastName);
       const totals = calculateTeamTotals(match);
       const leaderClass = calculateMatchCardClass(match);
 
@@ -443,16 +438,10 @@
             <div class="score-badge ${calculateMatchLeaderClass(match)}">${escapeHtml(calculateMatchStatus(match))}</div>
           </div>
 
-          <div class="team-grid">
-            <div class="team-box red-team">
-              <div class="team-title">Red • ${totals.red} Shots</div>
-              <div class="player-list">${redPlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
-            </div>
-
-            <div class="team-box blue-team">
-              <div class="team-title">Blue • ${totals.blue} Shots</div>
-              <div class="player-list">${bluePlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
-            </div>
+          <div class="matchup-line">
+            <span class="matchup-red">${redPlayers.map(name => escapeHtml(name)).join(" / ")}</span>
+            <span class="matchup-vs">vs</span>
+            <span class="matchup-blue">${bluePlayers.map(name => escapeHtml(name)).join(" / ")}</span>
           </div>
 
           <div class="nine-label">Front 9</div>
@@ -572,6 +561,12 @@
 
     function playerName(playerId) {
       return tournament?.players?.[playerId]?.name || "Unknown Player";
+    }
+
+    function playerLastName(playerId) {
+      const fullName = playerName(playerId).trim();
+      const parts = fullName.split(/\s+/).filter(Boolean);
+      return parts.length ? parts[parts.length - 1] : fullName;
     }
 
     function showError(message) {
