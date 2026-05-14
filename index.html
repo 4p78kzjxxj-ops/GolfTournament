@@ -14,6 +14,8 @@
       --muted: #a7b3ad;
       --green: #16a34a;
       --green2: #22c55e;
+      --blue: #2563eb;
+      --sky: #38bdf8;
       --gold: #f5c542;
       --border: rgba(255,255,255,0.12);
       --danger: #dc2626;
@@ -112,6 +114,11 @@
       box-shadow: 0 14px 28px rgba(22, 163, 74, 0.25);
     }
 
+    .spectator-btn {
+      background: linear-gradient(135deg, var(--blue), var(--sky));
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+    }
+
     .admin-btn {
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border);
@@ -164,18 +171,22 @@
       margin: 12px 0 6px;
     }
 
-    input {
+    input, select {
       width: 100%;
       min-height: 58px;
       border-radius: 16px;
       border: 1px solid var(--border);
       background: #020617;
       color: var(--text);
+      font-size: 16px;
+      padding: 10px 12px;
+    }
+
+    input.code-input {
       text-align: center;
       font-size: 28px;
       font-weight: 900;
       letter-spacing: 9px;
-      padding: 10px 12px;
     }
 
     .modal-actions {
@@ -204,6 +215,7 @@
     @media (min-width: 720px) {
       .hero-card { padding: 46px 34px; }
       .actions { grid-template-columns: 1fr 1fr; max-width: 620px; }
+      .admin-btn { grid-column: 1 / -1; }
     }
   </style>
 </head>
@@ -214,11 +226,12 @@
         <div class="logo-mark">⛳</div>
         <h1>Golf Tournament</h1>
         <p class="subtitle">
-          Live tournament scoring for 2v2 best ball matches. Players can enter their 4-digit code to jump straight to their match.
+          Live tournament scoring for 2v2 best ball matches. Players can enter their 4-digit code, and spectators can follow the tournament live.
         </p>
 
         <div class="actions">
           <button class="player-btn" onclick="openPlayerModal()">I'm a Player</button>
+          <button class="spectator-btn" onclick="openSpectatorModal()">I'm a Spectator</button>
           <a class="button-link admin-btn" href="admin.html">Admin Setup</a>
         </div>
 
@@ -237,6 +250,7 @@
       <label for="playerCode">Player ID</label>
       <input
         id="playerCode"
+        class="code-input"
         type="tel"
         inputmode="numeric"
         maxlength="4"
@@ -255,31 +269,69 @@
     </div>
   </div>
 
-  <script>
-    function openPlayerModal() {
+  <div id="spectatorModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Select Tournament</h2>
+      <p>Choose the tournament you want to follow.</p>
+
+      <label for="spectatorTournament">Tournament</label>
+      <select id="spectatorTournament"></select>
+
+      <div id="spectatorError" class="error">No tournaments are available yet.</div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeSpectatorModal()">Cancel</button>
+        <button class="go-btn" onclick="goToSpectatorPage()">View</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY_HERE",
+      authDomain: "golftournament-44a54.firebaseapp.com",
+      databaseURL: "https://golftournament-44a54-default-rtdb.firebaseio.com",
+      projectId: "golftournament-44a54",
+      storageBucket: "golftournament-44a54.firebasestorage.app",
+      messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
+      appId: "PASTE_YOUR_APP_ID_HERE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let tournaments = {};
+
+    onValue(ref(db, "tournaments"), snapshot => {
+      tournaments = snapshot.val() || {};
+      renderSpectatorTournamentOptions();
+    });
+
+    window.openPlayerModal = function() {
       document.getElementById("playerModal").classList.add("show");
       document.getElementById("playerCode").value = "";
       document.getElementById("codeError").classList.remove("show");
       setTimeout(() => document.getElementById("playerCode").focus(), 100);
-    }
+    };
 
-    function closePlayerModal() {
+    window.closePlayerModal = function() {
       document.getElementById("playerModal").classList.remove("show");
-    }
+    };
 
-    function cleanPlayerCode() {
+    window.cleanPlayerCode = function() {
       const input = document.getElementById("playerCode");
       input.value = input.value.replace(/\D/g, "").slice(0, 4);
       document.getElementById("codeError").classList.remove("show");
-    }
+    };
 
-    function submitPlayerCodeOnEnter(event) {
-      if (event.key === "Enter") {
-        goToPlayerMatch();
-      }
-    }
+    window.submitPlayerCodeOnEnter = function(event) {
+      if (event.key === "Enter") goToPlayerMatch();
+    };
 
-    function goToPlayerMatch() {
+    window.goToPlayerMatch = function() {
       const code = document.getElementById("playerCode").value.trim();
 
       if (!/^\d{4}$/.test(code)) {
@@ -288,13 +340,63 @@
       }
 
       window.location.href = `player.html?code=${encodeURIComponent(code)}`;
+    };
+
+    window.openSpectatorModal = function() {
+      document.getElementById("spectatorModal").classList.add("show");
+      document.getElementById("spectatorError").classList.remove("show");
+      renderSpectatorTournamentOptions();
+    };
+
+    window.closeSpectatorModal = function() {
+      document.getElementById("spectatorModal").classList.remove("show");
+    };
+
+    window.goToSpectatorPage = function() {
+      const tournamentId = document.getElementById("spectatorTournament").value;
+
+      if (!tournamentId) {
+        document.getElementById("spectatorError").classList.add("show");
+        return;
+      }
+
+      window.location.href = `spectator.html?tournamentId=${encodeURIComponent(tournamentId)}`;
+    };
+
+    function renderSpectatorTournamentOptions() {
+      const select = document.getElementById("spectatorTournament");
+      if (!select) return;
+
+      const list = Object.entries(tournaments)
+        .map(([id, tournament]) => ({ id, ...tournament }))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if (!list.length) {
+        select.innerHTML = '<option value="">No tournaments available</option>';
+        return;
+      }
+
+      select.innerHTML = list.map(tournament => `
+        <option value="${tournament.id}">${escapeHtml(tournament.name || "Tournament")}${tournament.date ? " - " + escapeHtml(tournament.date) : ""}</option>
+      `).join("");
     }
 
     document.getElementById("playerModal").addEventListener("click", function(event) {
-      if (event.target.id === "playerModal") {
-        closePlayerModal();
-      }
+      if (event.target.id === "playerModal") closePlayerModal();
     });
+
+    document.getElementById("spectatorModal").addEventListener("click", function(event) {
+      if (event.target.id === "spectatorModal") closeSpectatorModal();
+    });
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
   </script>
 </body>
 </html>
