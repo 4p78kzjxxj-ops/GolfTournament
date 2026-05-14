@@ -174,10 +174,10 @@
     }
 
     .hole-bubble {
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
-      flex: 0 0 42px;
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      flex: 0 0 28px;
       border-radius: 999px;
       border: 1px solid var(--border);
       display: flex;
@@ -190,7 +190,7 @@
     }
 
     .hole-divider {
-      width: 2px;
+      width: 1px;
       min-width: 2px;
       height: 34px;
       border-radius: 999px;
@@ -199,17 +199,14 @@
     }
 
     .hole-number {
-      font-size: 10px;
+      font-size: 8px;
       font-weight: 950;
       line-height: 1;
       opacity: 0.9;
     }
 
     .hole-result {
-      margin-top: 2px;
-      font-size: 9px;
-      font-weight: 950;
-      line-height: 1;
+      display: none;
     }
 
     .bubble-red {
@@ -290,10 +287,10 @@
       }
 
       .hole-bubble {
-        width: 38px;
-        height: 38px;
-        min-width: 38px;
-        flex-basis: 38px;
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+        flex-basis: 26px;
       }
 
       .hole-number {
@@ -325,10 +322,10 @@
       }
 
       .hole-bubble {
-        width: 36px;
-        height: 36px;
-        min-width: 36px;
-        flex-basis: 36px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        flex-basis: 24px;
       }
     }
   </style>
@@ -418,6 +415,8 @@
       const redPlayers = (match.red || []).map(playerName);
       const bluePlayers = (match.blue || []).map(playerName);
 
+      const totals = calculateTeamTotals(match);
+
       return `
         <div class="match-card">
           <div class="match-header">
@@ -430,12 +429,12 @@
 
           <div class="team-grid">
             <div class="team-box red-team">
-              <div class="team-title">Red</div>
+              <div class="team-title">Red • ${totals.red} Shots</div>
               <div class="player-list">${redPlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
             </div>
 
             <div class="team-box blue-team">
-              <div class="team-title">Blue</div>
+              <div class="team-title">Blue • ${totals.blue} Shots</div>
               <div class="player-list">${bluePlayers.map(name => `<div>${escapeHtml(name)}</div>`).join("")}</div>
             </div>
           </div>
@@ -492,6 +491,18 @@
       }
 
       return html;
+    }
+
+    function calculateTeamTotals(match) {
+      let red = 0;
+      let blue = 0;
+
+      Object.values(match.holes || {}).forEach(hole => {
+        if (hole?.redScore) red += Number(hole.redScore);
+        if (hole?.blueScore) blue += Number(hole.blueScore);
+      });
+
+      return { red, blue };
     }
 
     function calculateMatchStatus(match) {
