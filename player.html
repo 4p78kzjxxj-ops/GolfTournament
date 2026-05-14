@@ -33,7 +33,7 @@
     }
 
     .page {
-      width: min(980px, 100%);
+      width: min(760px, 100%);
       margin: 0 auto;
       padding: 18px 14px 40px;
     }
@@ -67,6 +67,7 @@
       color: #bbf7d0;
       font-size: 13px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .card {
@@ -84,9 +85,43 @@
       margin-top: 0;
     }
 
-    .muted {
-      color: var(--muted);
+    .muted { color: var(--muted); }
+
+    .match-button-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
     }
+
+    button {
+      border: 0;
+      border-radius: 18px;
+      min-height: 54px;
+      padding: 12px 16px;
+      color: white;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .score-match-btn {
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      width: 100%;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-match-btn span:last-child {
+      opacity: 0.9;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .gray-btn { background: #334155; }
+    .green-btn { background: linear-gradient(135deg, var(--green), var(--green2)); }
 
     .team-grid {
       display: grid;
@@ -102,47 +137,33 @@
       background: rgba(2, 6, 23, 0.78);
     }
 
-    .red-team {
-      border-left: 5px solid var(--red);
-    }
+    .red-team { border-left: 5px solid var(--red); }
+    .blue-team { border-left: 5px solid var(--blue); }
 
-    .blue-team {
-      border-left: 5px solid var(--blue);
-    }
-
-    .scoreboard {
-      display: grid;
-      gap: 12px;
-    }
-
-    .hole-card {
-      background: rgba(2, 6, 23, 0.82);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 16px;
-    }
-
-    .hole-top {
+    .hole-title-wrap {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .hole-title {
-      font-size: 22px;
-      font-weight: 900;
+      font-size: clamp(36px, 11vw, 62px);
+      line-height: 1;
+      font-weight: 1000;
+      letter-spacing: -2px;
     }
 
-    .hole-status {
-      font-size: 13px;
-      font-weight: 700;
-      color: #d1fae5;
-      background: rgba(22, 163, 74, 0.18);
-      border: 1px solid rgba(22, 163, 74, 0.32);
+    .hole-pill {
       border-radius: 999px;
-      padding: 6px 10px;
+      padding: 8px 12px;
+      background: rgba(245, 197, 66, 0.15);
+      border: 1px solid rgba(245, 197, 66, 0.28);
+      color: #fde68a;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .scores-grid {
@@ -152,51 +173,33 @@
     }
 
     .score-team {
-      border-radius: 16px;
-      padding: 12px;
+      border-radius: 18px;
+      padding: 14px;
       background: rgba(15, 23, 42, 0.78);
       border: 1px solid var(--border);
     }
 
-    .score-team.red {
-      border-left: 5px solid var(--red);
-    }
-
-    .score-team.blue {
-      border-left: 5px solid var(--blue);
-    }
+    .score-team.red { border-left: 5px solid var(--red); }
+    .score-team.blue { border-left: 5px solid var(--blue); }
 
     .score-team label {
       display: block;
       font-size: 13px;
       color: var(--muted);
       margin-bottom: 8px;
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .score-input {
       width: 100%;
-      min-height: 64px;
-      border-radius: 16px;
+      min-height: 76px;
+      border-radius: 18px;
       border: 1px solid var(--border);
       background: #020617;
       color: var(--text);
       text-align: center;
-      font-size: 30px;
-      font-weight: 900;
-    }
-
-    .save-btn {
-      width: 100%;
-      margin-top: 14px;
-      border: 0;
-      border-radius: 18px;
-      min-height: 54px;
-      background: linear-gradient(135deg, var(--green), var(--green2));
-      color: white;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
+      font-size: 38px;
+      font-weight: 1000;
     }
 
     .winner-bar {
@@ -221,25 +224,29 @@
     }
 
     .winner-tie {
-      background: rgba(245, 197, 66, 0.18);
-      border: 1px solid rgba(245, 197, 66, 0.35);
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid rgba(245, 158, 11, 0.35);
       color: #fde68a;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 80px 18px;
+    .nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
     }
 
-    .empty-state h2 {
-      margin-bottom: 10px;
+    .save-btn {
+      width: 100%;
+      margin-top: 14px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
     }
 
     .back-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-top: 18px;
+      margin-top: 12px;
       min-height: 52px;
       padding: 0 18px;
       border-radius: 16px;
@@ -248,22 +255,27 @@
       color: white;
       text-decoration: none;
       font-weight: 800;
+      width: 100%;
     }
 
-    @media (max-width: 820px) {
-      .team-grid,
-      .scores-grid {
-        grid-template-columns: 1fr;
-      }
+    .empty-state {
+      text-align: center;
+      padding: 70px 18px;
+    }
 
+    @media (max-width: 720px) {
       .topbar {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .hole-top {
+      .team-grid,
+      .scores-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hole-title-wrap {
         flex-direction: column;
-        align-items: flex-start;
       }
     }
   </style>
@@ -273,7 +285,7 @@
     <div class="topbar">
       <div>
         <h1>Player Match</h1>
-        <p>Enter your team's best ball score for each hole.</p>
+        <p>Score one hole at a time.</p>
       </div>
 
       <div class="status" id="connectionStatus">Connecting to Firebase...</div>
@@ -308,6 +320,9 @@
     const connectionStatus = document.getElementById("connectionStatus");
 
     let tournaments = {};
+    let playerMatches = [];
+    let selectedMatchKey = null;
+    let currentHole = 1;
 
     const params = new URLSearchParams(window.location.search);
     const playerCode = params.get("code") || "";
@@ -320,6 +335,13 @@
 
     onValue(ref(db, "tournaments"), snapshot => {
       tournaments = snapshot.val() || {};
+      playerMatches = findPlayerMatches(playerCode);
+
+      if (selectedMatchKey && !playerMatches.some(item => item.key === selectedMatchKey)) {
+        selectedMatchKey = null;
+        currentHole = 1;
+      }
+
       render();
     });
 
@@ -329,22 +351,55 @@
         return;
       }
 
-      const matchData = findPlayerMatch(playerCode);
-
-      if (!matchData) {
-        showError("No active match found for this player code.");
+      if (!playerMatches.length) {
+        showError("No active matches found for this player code.");
         return;
       }
 
-      const {
-        tournamentId,
-        tournament,
-        matchId,
-        match,
-        player,
-        redPlayers,
-        bluePlayers
-      } = matchData;
+      if (!selectedMatchKey) {
+        renderMatchPicker();
+        return;
+      }
+
+      const matchData = playerMatches.find(item => item.key === selectedMatchKey);
+
+      if (!matchData) {
+        selectedMatchKey = null;
+        renderMatchPicker();
+        return;
+      }
+
+      renderHoleScorer(matchData);
+    }
+
+    function renderMatchPicker() {
+      const playerName = playerMatches[0]?.player?.name || "Player";
+
+      content.innerHTML = `
+        <div class="card">
+          <h2>Welcome, ${escapeHtml(playerName)}</h2>
+          <div class="muted">Select the match you want to score.</div>
+
+          <div class="match-button-grid">
+            ${playerMatches.map(item => `
+              <button class="score-match-btn" onclick="selectMatch('${item.key}')">
+                <span>Score ${escapeHtml(item.match.name || "Match")}</span>
+                <span>${escapeHtml(getMatchProgress(item.match))}</span>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+
+        <a href="index.html" class="back-btn">Back to Home</a>
+      `;
+    }
+
+    function renderHoleScorer(matchData) {
+      const { tournament, match, redPlayers, bluePlayers } = matchData;
+      const holeData = match.holes?.[currentHole] || {};
+      const redScore = holeData.redScore || "";
+      const blueScore = holeData.blueScore || "";
+      const winner = getHoleWinnerText(redScore, blueScore);
 
       content.innerHTML = `
         <div class="card">
@@ -368,121 +423,116 @@
           </div>
         </div>
 
-        <div class="scoreboard">
-          ${renderHoles(tournamentId, matchId, match)}
-        </div>
+        <div class="card">
+          <div class="hole-title-wrap">
+            <div>
+              <div class="hole-title">Hole ${currentHole}</div>
+              <div class="muted">Enter each team's lowest best-ball score.</div>
+            </div>
+            <div class="hole-pill">${escapeHtml(getMatchProgress(match))}</div>
+          </div>
 
-        <a href="index.html" class="back-btn">Back to Home</a>
-      `;
-
-      attachSaveHandlers(tournamentId, matchId, match);
-    }
-
-    function renderHoles(tournamentId, matchId, match) {
-      let html = "";
-
-      for (let i = 1; i <= 18; i++) {
-        const holeData = match.holes?.[i] || {};
-
-        const redScore = holeData.redScore || "";
-        const blueScore = holeData.blueScore || "";
-
-        let winnerClass = "winner-tie";
-        let winnerText = "Waiting for scores";
-
-        if (redScore && blueScore) {
-          if (Number(redScore) < Number(blueScore)) {
-            winnerClass = "winner-red";
-            winnerText = "Red Team Wins Hole";
-          } else if (Number(blueScore) < Number(redScore)) {
-            winnerClass = "winner-blue";
-            winnerText = "Blue Team Wins Hole";
-          } else {
-            winnerClass = "winner-tie";
-            winnerText = "Hole Tied";
-          }
-        }
-
-        html += `
-          <div class="hole-card">
-            <div class="hole-top">
-              <div class="hole-title">Hole ${i}</div>
-              <div class="hole-status">Best Ball Scoring</div>
+          <div class="scores-grid">
+            <div class="score-team red">
+              <label>Red Team Lowest Score</label>
+              <input
+                class="score-input"
+                type="number"
+                min="1"
+                max="20"
+                value="${escapeHtml(redScore)}"
+                id="redScore"
+              />
             </div>
 
-            <div class="scores-grid">
-              <div class="score-team red">
-                <label>Red Team Lowest Score</label>
-                <input
-                  class="score-input"
-                  type="number"
-                  min="1"
-                  max="20"
-                  value="${escapeHtml(redScore)}"
-                  id="red-${i}"
-                />
-              </div>
-
-              <div class="score-team blue">
-                <label>Blue Team Lowest Score</label>
-                <input
-                  class="score-input"
-                  type="number"
-                  min="1"
-                  max="20"
-                  value="${escapeHtml(blueScore)}"
-                  id="blue-${i}"
-                />
-              </div>
-            </div>
-
-            <button class="save-btn" data-hole="${i}">
-              Save Hole ${i}
-            </button>
-
-            <div class="winner-bar ${winnerClass}">
-              ${winnerText}
+            <div class="score-team blue">
+              <label>Blue Team Lowest Score</label>
+              <input
+                class="score-input"
+                type="number"
+                min="1"
+                max="20"
+                value="${escapeHtml(blueScore)}"
+                id="blueScore"
+              />
             </div>
           </div>
-        `;
+
+          <button class="save-btn" onclick="saveCurrentHole()">Save Hole ${currentHole}</button>
+
+          <div class="winner-bar ${winner.className}">${winner.text}</div>
+
+          <div class="nav-grid">
+            <button class="gray-btn" onclick="previousHole()">Previous Hole</button>
+            <button class="green-btn" onclick="nextHole()">Next Hole</button>
+          </div>
+
+          <button class="gray-btn" style="width:100%; margin-top:10px;" onclick="backToMatches()">Back to Match List</button>
+        </div>
+      `;
+    }
+
+    window.selectMatch = function(key) {
+      selectedMatchKey = key;
+      currentHole = getFirstOpenHole(playerMatches.find(item => item.key === key)?.match || {});
+      render();
+    };
+
+    window.backToMatches = function() {
+      selectedMatchKey = null;
+      currentHole = 1;
+      render();
+    };
+
+    window.previousHole = async function() {
+      await saveCurrentHole(false);
+      currentHole = Math.max(1, currentHole - 1);
+      render();
+    };
+
+    window.nextHole = async function() {
+      await saveCurrentHole(false);
+      currentHole = Math.min(18, currentHole + 1);
+      render();
+    };
+
+    window.saveCurrentHole = async function(showAlert = true) {
+      const matchData = playerMatches.find(item => item.key === selectedMatchKey);
+      if (!matchData) return;
+
+      const redScore = document.getElementById("redScore")?.value.trim();
+      const blueScore = document.getElementById("blueScore")?.value.trim();
+
+      if (!redScore && !blueScore) return;
+
+      if (!redScore || !blueScore) {
+        alert("Enter both scores before saving.");
+        return;
       }
 
-      return html;
-    }
+      const redNum = Number(redScore);
+      const blueNum = Number(blueScore);
 
-    function attachSaveHandlers(tournamentId, matchId, match) {
-      document.querySelectorAll(".save-btn").forEach(button => {
-        button.addEventListener("click", async () => {
-          const hole = button.dataset.hole;
+      if (redNum < 1 || blueNum < 1) {
+        alert("Scores must be greater than 0.");
+        return;
+      }
 
-          const redInput = document.getElementById(`red-${hole}`);
-          const blueInput = document.getElementById(`blue-${hole}`);
-
-          const redScore = redInput.value.trim();
-          const blueScore = blueInput.value.trim();
-
-          if (!redScore || !blueScore) {
-            alert("Enter both scores.");
-            return;
-          }
-
-          const redNum = Number(redScore);
-          const blueNum = Number(blueScore);
-
-          if (redNum < 1 || blueNum < 1) {
-            alert("Scores must be greater than 0.");
-            return;
-          }
-
-          await update(ref(db, `tournaments/${tournamentId}/matches/${matchId}/holes/${hole}`), {
-            redScore: redNum,
-            blueScore: blueNum
-          });
-        });
+      await update(ref(db, `tournaments/${matchData.tournamentId}/matches/${matchData.matchId}/holes/${currentHole}`), {
+        redScore: redNum,
+        blueScore: blueNum
       });
-    }
 
-    function findPlayerMatch(code) {
+      if (showAlert) {
+        alert(`Hole ${currentHole} saved.`);
+      }
+    };
+
+    function findPlayerMatches(code) {
+      if (!/^\d{4}$/.test(code)) return [];
+
+      const results = [];
+
       for (const [tournamentId, tournament] of Object.entries(tournaments)) {
         const players = tournament.players || {};
         const matches = tournament.matches || {};
@@ -491,10 +541,7 @@
 
         for (const [playerId, player] of Object.entries(players)) {
           if (player.code === code) {
-            matchingPlayer = {
-              id: playerId,
-              ...player
-            };
+            matchingPlayer = { id: playerId, ...player };
             break;
           }
         }
@@ -516,7 +563,8 @@
             ...(players[id] || {})
           }));
 
-          return {
+          results.push({
+            key: `${tournamentId}_${matchId}`,
             tournamentId,
             tournament,
             matchId,
@@ -524,11 +572,60 @@
             player: matchingPlayer,
             redPlayers,
             bluePlayers
-          };
+          });
         }
       }
 
-      return null;
+      return results.sort((a, b) => (a.match.createdAt || 0) - (b.match.createdAt || 0));
+    }
+
+    function getFirstOpenHole(match) {
+      for (let i = 1; i <= 18; i++) {
+        const hole = match.holes?.[i] || {};
+        if (!hole.redScore || !hole.blueScore) return i;
+      }
+      return 18;
+    }
+
+    function getMatchProgress(match) {
+      let scored = 0;
+
+      Object.values(match.holes || {}).forEach(hole => {
+        if (hole?.redScore && hole?.blueScore) scored++;
+      });
+
+      return `${scored}/18 Scored`;
+    }
+
+    function getHoleWinnerText(redScore, blueScore) {
+      if (!redScore || !blueScore) {
+        return {
+          className: "winner-tie",
+          text: "Waiting for scores"
+        };
+      }
+
+      const red = Number(redScore);
+      const blue = Number(blueScore);
+
+      if (red < blue) {
+        return {
+          className: "winner-red",
+          text: "Red Team Wins Hole"
+        };
+      }
+
+      if (blue < red) {
+        return {
+          className: "winner-blue",
+          text: "Blue Team Wins Hole"
+        };
+      }
+
+      return {
+        className: "winner-tie",
+        text: "Hole Tied"
+      };
     }
 
     function showError(message) {
@@ -537,9 +634,7 @@
           <h2>Match Not Found</h2>
           <div class="muted">${escapeHtml(message)}</div>
 
-          <a href="index.html" class="back-btn">
-            Back to Home
-          </a>
+          <a href="index.html" class="back-btn">Back to Home</a>
         </div>
       `;
     }
