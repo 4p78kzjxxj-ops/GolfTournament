@@ -63,6 +63,9 @@
 
     label { display: block; margin: 12px 0 6px; color: var(--muted); font-size: 13px; font-weight: 800; }
     .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .button-row button { flex: 1 1 220px; }
+    .mode-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .mode-buttons button { min-height: 74px; font-size: 17px; }
     .status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(22, 163, 74, 0.18); border: 1px solid rgba(22, 163, 74, 0.35); color: #bbf7d0; font-size: 13px; font-weight: 700; }
     .list-item { background: rgba(2, 6, 23, 0.75); border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-top: 10px; }
     .list-item strong { font-size: 16px; }
@@ -73,13 +76,13 @@
     .red-team { border-left: 5px solid var(--red); }
     .blue-team { border-left: 5px solid var(--blue); }
     .player-code { display: inline-block; margin-top: 6px; background: rgba(245, 197, 66, 0.15); color: #fde68a; border: 1px solid rgba(245, 197, 66, 0.25); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     .section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     .edit-grid { display: grid; grid-template-columns: 1.5fr 1fr 120px; gap: 10px; margin-top: 12px; align-items: end; }
     .edit-grid label { margin-top: 0; }
 
     @media (max-width: 900px) {
-      .grid.two, .grid.three, .match-grid, .edit-grid { grid-template-columns: 1fr; }
+      .grid.two, .grid.three, .match-grid, .edit-grid, .mode-buttons { grid-template-columns: 1fr; }
       .topbar { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -100,76 +103,85 @@
       <div class="topbar">
         <div>
           <h1>Tournament Admin</h1>
-          <p>Manage tournaments, team names, players, matches, and player IDs.</p>
+          <p>Choose whether to create a new tournament or manage an existing one.</p>
         </div>
         <div class="status" id="connectionStatus">Connecting to Firebase...</div>
       </div>
 
-      <div class="grid two">
-        <div class="card">
-          <h2>Create Tournament</h2>
-          <label>Tournament Name</label>
-          <input id="tournamentName" placeholder="Spring Classic 2026" />
-          <label>Date</label>
-          <input id="tournamentDate" type="date" />
-          <label>Red Team Name</label>
-          <input id="newRedTeamName" placeholder="Red Team" value="Red Team" />
-          <label>Blue Team Name</label>
-          <input id="newBlueTeamName" placeholder="Blue Team" value="Blue Team" />
-          <div class="button-row"><button class="green-btn" onclick="createTournament()">Create Tournament</button></div>
-        </div>
-
-        <div class="card">
-          <h2>Current Tournament</h2>
-          <div id="currentTournamentBox" class="muted">No tournament selected.</div>
-          <div id="tournamentEditBox"></div>
+      <div class="card">
+        <div class="mode-buttons">
+          <button class="blue-btn" onclick="showCurrentTournaments()">View Current Tournaments</button>
+          <button class="green-btn" onclick="showCreateTournament()">Create New Tournament</button>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Saved Tournaments</h2>
+      <div id="createTournamentSection" class="card hidden">
+        <h2>Create New Tournament</h2>
+        <label>Tournament Name</label>
+        <input id="tournamentName" placeholder="Spring Classic 2026" />
+        <label>Date</label>
+        <input id="tournamentDate" type="date" />
+        <label>Red Team Name</label>
+        <input id="newRedTeamName" placeholder="Red Team" value="Red Team" />
+        <label>Blue Team Name</label>
+        <input id="newBlueTeamName" placeholder="Blue Team" value="Blue Team" />
+        <div class="button-row"><button class="green-btn" onclick="createTournament()">Create Tournament</button></div>
+      </div>
+
+      <div id="currentTournamentsSection" class="card hidden">
+        <h2>View Current Tournaments</h2>
+        <label>Select Tournament</label>
+        <select id="tournamentSelector" onchange="selectTournamentFromDropdown()"></select>
         <div id="tournamentList"></div>
       </div>
 
-      <div class="grid two">
+      <div id="settingsSection" class="hidden">
         <div class="card">
-          <h2>Add Player</h2>
-          <label>Player Name</label>
-          <input id="playerName" placeholder="Player Name" />
-          <label>Team</label>
-          <select id="playerTeam"></select>
-          <label>4 Digit Player Code</label>
-          <input id="playerCode" maxlength="4" inputmode="numeric" placeholder="1234" oninput="cleanPlayerCode()" />
-          <div class="button-row"><button class="green-btn" onclick="addPlayer()">Add Player</button></div>
+          <h2>Tournament Settings</h2>
+          <div id="currentTournamentBox" class="muted">No tournament selected.</div>
+          <div id="tournamentEditBox"></div>
         </div>
 
-        <div class="card">
-          <div class="section-header">
-            <div>
-              <h2 style="margin-bottom:4px;">Players</h2>
-              <div class="muted">Players are hidden by default.</div>
-            </div>
-            <button id="togglePlayersBtn" class="blue-btn" onclick="togglePlayers()">View Players</button>
-          </div>
-          <div id="playersPanel" class="hidden"><div id="playerList"></div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Create Match</h2>
-        <div class="muted">Match names are created automatically from player last names.</div>
         <div class="grid two">
-          <div><label id="red1Label">Red Player 1</label><select id="red1"></select></div>
-          <div><label id="red2Label">Red Player 2</label><select id="red2"></select></div>
-          <div><label id="blue1Label">Blue Player 1</label><select id="blue1"></select></div>
-          <div><label id="blue2Label">Blue Player 2</label><select id="blue2"></select></div>
-        </div>
-        <div class="button-row"><button class="green-btn" onclick="createMatch()">Create Match</button></div>
-      </div>
+          <div class="card">
+            <h2>Add Player</h2>
+            <label>Player Name</label>
+            <input id="playerName" placeholder="Player Name" />
+            <label>Team</label>
+            <select id="playerTeam"></select>
+            <label>4 Digit Player Code</label>
+            <input id="playerCode" maxlength="4" inputmode="numeric" placeholder="1234" oninput="cleanPlayerCode()" />
+            <div class="button-row"><button class="green-btn" onclick="addPlayer()">Add Player</button></div>
+          </div>
 
-      <div class="card">
-        <h2>Matches</h2>
-        <div id="matchList"></div>
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h2 style="margin-bottom:4px;">Players</h2>
+                <div class="muted">Players are hidden by default.</div>
+              </div>
+              <button id="togglePlayersBtn" class="blue-btn" onclick="togglePlayers()">View Players</button>
+            </div>
+            <div id="playersPanel" class="hidden"><div id="playerList"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Create Match</h2>
+          <div class="muted">Match names are created automatically from player last names.</div>
+          <div class="grid two">
+            <div><label id="red1Label">Red Player 1</label><select id="red1"></select></div>
+            <div><label id="red2Label">Red Player 2</label><select id="red2"></select></div>
+            <div><label id="blue1Label">Blue Player 1</label><select id="blue1"></select></div>
+            <div><label id="blue2Label">Blue Player 2</label><select id="blue2"></select></div>
+          </div>
+          <div class="button-row"><button class="green-btn" onclick="createMatch()">Create Match</button></div>
+        </div>
+
+        <div class="card">
+          <h2>Matches</h2>
+          <div id="matchList"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -196,6 +208,7 @@
     let tournaments = {};
     let currentTournamentId = localStorage.getItem("currentTournamentId") || null;
     let playersVisible = false;
+    let activeMode = "";
 
     const connectionStatus = document.getElementById("connectionStatus");
 
@@ -217,13 +230,8 @@
       return tournaments[currentTournamentId] || null;
     }
 
-    function redTeamName(tournament = getCurrentTournament()) {
-      return tournament?.teamNames?.red || "Red Team";
-    }
-
-    function blueTeamName(tournament = getCurrentTournament()) {
-      return tournament?.teamNames?.blue || "Blue Team";
-    }
+    function redTeamName(tournament = getCurrentTournament()) { return tournament?.teamNames?.red || "Red Team"; }
+    function blueTeamName(tournament = getCurrentTournament()) { return tournament?.teamNames?.blue || "Blue Team"; }
 
     function getTournamentArray() {
       return Object.entries(tournaments).map(([id, tournament]) => ({ id, ...tournament, players: tournament.players || {}, matches: tournament.matches || {} })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -255,6 +263,31 @@
       }
       document.getElementById("loginScreen").style.display = "none";
       document.getElementById("dashboard").classList.add("show");
+      showCurrentTournaments();
+    };
+
+    window.showCurrentTournaments = function() {
+      activeMode = "current";
+      document.getElementById("currentTournamentsSection").classList.remove("hidden");
+      document.getElementById("createTournamentSection").classList.add("hidden");
+      document.getElementById("settingsSection").classList.toggle("hidden", !currentTournamentId);
+      render();
+    };
+
+    window.showCreateTournament = function() {
+      activeMode = "create";
+      document.getElementById("createTournamentSection").classList.remove("hidden");
+      document.getElementById("currentTournamentsSection").classList.add("hidden");
+      document.getElementById("settingsSection").classList.add("hidden");
+    };
+
+    window.selectTournamentFromDropdown = function() {
+      const id = document.getElementById("tournamentSelector").value;
+      if (!id) return;
+      currentTournamentId = id;
+      localStorage.setItem("currentTournamentId", id);
+      document.getElementById("settingsSection").classList.remove("hidden");
+      render();
     };
 
     window.cleanPlayerCode = function() {
@@ -287,6 +320,11 @@
       localStorage.setItem("currentTournamentId", currentTournamentId);
       document.getElementById("tournamentName").value = "";
       document.getElementById("tournamentDate").value = "";
+      activeMode = "current";
+      document.getElementById("createTournamentSection").classList.add("hidden");
+      document.getElementById("currentTournamentsSection").classList.remove("hidden");
+      document.getElementById("settingsSection").classList.remove("hidden");
+      render();
     };
 
     window.saveTournamentSettings = async function() {
@@ -299,18 +337,13 @@
       alert("Tournament settings updated.");
     };
 
-    window.selectTournament = function(id) {
-      currentTournamentId = id;
-      localStorage.setItem("currentTournamentId", id);
-      render();
-    };
-
     window.deleteTournament = async function(id) {
       if (!confirm("Delete this tournament?")) return;
       await remove(ref(db, `tournaments/${id}`));
       if (currentTournamentId === id) {
         currentTournamentId = null;
         localStorage.removeItem("currentTournamentId");
+        document.getElementById("settingsSection").classList.add("hidden");
       }
     };
 
@@ -376,28 +409,37 @@
       await remove(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}`));
     };
 
-    function playerName(playerId) {
-      return getCurrentTournament()?.players?.[playerId]?.name || "Unknown";
-    }
-
+    function playerName(playerId) { return getCurrentTournament()?.players?.[playerId]?.name || "Unknown"; }
     function playerLastName(playerId) {
       const fullName = playerName(playerId).trim();
       const parts = fullName.split(/\s+/).filter(Boolean);
       return parts.length ? parts[parts.length - 1] : fullName;
     }
-
-    function playerCode(playerId) {
-      return getCurrentTournament()?.players?.[playerId]?.code || "----";
-    }
+    function playerCode(playerId) { return getCurrentTournament()?.players?.[playerId]?.code || "----"; }
 
     function teamOptionsHtml(selectedTeam) {
-      const red = redTeamName();
-      const blue = blueTeamName();
       return `
-        <option value="Red" ${selectedTeam === "Red" ? "selected" : ""}>${escapeHtml(red)}</option>
-        <option value="Blue" ${selectedTeam === "Blue" ? "selected" : ""}>${escapeHtml(blue)}</option>
+        <option value="Red" ${selectedTeam === "Red" ? "selected" : ""}>${escapeHtml(redTeamName())}</option>
+        <option value="Blue" ${selectedTeam === "Blue" ? "selected" : ""}>${escapeHtml(blueTeamName())}</option>
         <option value="Unassigned" ${selectedTeam === "Unassigned" ? "selected" : ""}>Unassigned</option>
       `;
+    }
+
+    function renderTournamentSelector() {
+      const selector = document.getElementById("tournamentSelector");
+      const list = getTournamentArray();
+      selector.innerHTML = '<option value="">Select Tournament</option>' + list.map(tournament => `<option value="${tournament.id}" ${tournament.id === currentTournamentId ? "selected" : ""}>${escapeHtml(tournament.name)}${tournament.date ? " - " + escapeHtml(tournament.date) : ""}</option>`).join("");
+
+      const box = document.getElementById("tournamentList");
+      if (!list.length) {
+        box.innerHTML = '<div class="muted" style="margin-top:10px;">No tournaments yet. Use Create New Tournament.</div>';
+        return;
+      }
+      box.innerHTML = list.map(tournament => {
+        const playerCount = Object.keys(tournament.players || {}).length;
+        const matchCount = Object.keys(tournament.matches || {}).length;
+        return `<div class="list-item"><strong>${escapeHtml(tournament.name)}</strong><br /><div class="muted">${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches</div><div class="button-row"><button class="blue-btn" onclick="document.getElementById('tournamentSelector').value='${tournament.id}'; selectTournamentFromDropdown();">${currentTournamentId === tournament.id ? "Viewing" : "View Settings"}</button><button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button></div></div>`;
+      }).join("");
     }
 
     function renderCurrentTournament() {
@@ -405,7 +447,7 @@
       const editBox = document.getElementById("tournamentEditBox");
       const tournament = getCurrentTournament();
       if (!tournament) {
-        box.innerHTML = "No tournament selected.";
+        box.innerHTML = "Select a tournament above to view settings.";
         editBox.innerHTML = "";
         return;
       }
@@ -423,22 +465,11 @@
       `;
     }
 
-    function renderTournamentList() {
-      const box = document.getElementById("tournamentList");
-      const list = getTournamentArray();
-      if (!list.length) { box.innerHTML = '<div class="muted">No tournaments yet.</div>'; return; }
-      box.innerHTML = list.map(tournament => {
-        const playerCount = Object.keys(tournament.players || {}).length;
-        const matchCount = Object.keys(tournament.matches || {}).length;
-        return `<div class="list-item"><strong>${escapeHtml(tournament.name)}</strong><br /><div class="muted">${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches</div><div class="button-row"><button class="blue-btn" onclick="selectTournament('${tournament.id}')">${currentTournamentId === tournament.id ? "Current Tournament" : "Open"}</button><button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button></div></div>`;
-      }).join("");
-    }
-
     function renderPlayers() {
       const box = document.getElementById("playerList");
       const tournament = getCurrentTournament();
       const players = getPlayersArray(tournament);
-      if (!tournament) { box.innerHTML = '<div class="muted">Create or select a tournament first.</div>'; return; }
+      if (!tournament) { box.innerHTML = '<div class="muted">Select a tournament first.</div>'; return; }
       if (!players.length) { box.innerHTML = '<div class="muted">No players added yet.</div>'; return; }
       box.innerHTML = players.map(player => `
         <div class="list-item">
@@ -471,9 +502,7 @@
         const select = document.getElementById(id);
         const oldValue = select.value;
         select.innerHTML = '<option value="">Select Player</option>';
-        players.forEach(player => {
-          select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`;
-        });
+        players.forEach(player => { select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`; });
         select.value = oldValue;
       });
     }
@@ -482,7 +511,7 @@
       const box = document.getElementById("matchList");
       const tournament = getCurrentTournament();
       const matches = getMatchesArray(tournament);
-      if (!tournament) { box.innerHTML = '<div class="muted">Create or select a tournament first.</div>'; return; }
+      if (!tournament) { box.innerHTML = '<div class="muted">Select a tournament first.</div>'; return; }
       if (!matches.length) { box.innerHTML = '<div class="muted">No matches created yet.</div>'; return; }
       box.innerHTML = matches.map((match, index) => {
         const redPlayers = (match.red || []).map(playerId => `<div>${escapeHtml(playerName(playerId))}<br /><span class="player-code">${escapeHtml(playerCode(playerId))}</span></div>`).join("");
@@ -491,23 +520,19 @@
       }).join("");
     }
 
-    function escapeHtml(value) {
-      return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    function escapeAttribute(value) {
-      return escapeHtml(value).replace(/`/g, "&#096;");
-    }
+    function escapeHtml(value) { return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;"); }
+    function escapeAttribute(value) { return escapeHtml(value).replace(/`/g, "&#096;"); }
 
     function render() {
+      renderTournamentSelector();
       renderCurrentTournament();
-      renderTournamentList();
       renderTeamSelectors();
       renderPlayers();
       renderPlayerDropdowns();
       renderMatches();
       document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
       document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
+      if (activeMode === "current") document.getElementById("settingsSection").classList.toggle("hidden", !currentTournamentId);
     }
   </script>
 </body>
