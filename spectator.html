@@ -527,24 +527,48 @@
       return "score-tie";
     }
 
-    function calculateMatchCardClass(match) {
-      const winner = calculateMatchWinner(match);
-      if (winner === "red") return "match-red";
-      if (winner === "blue") return "match-blue";
-      return "match-tie";
+    function calculateMatchStatus(match) {
+  let redWins = 0;
+  let blueWins = 0;
+  let completedHoles = 0;
+
+  for (let i = 1; i <= 18; i++) {
+    const hole = match.holes?.[i];
+    const redScore = hole?.redScore;
+    const blueScore = hole?.blueScore;
+
+    if (!redScore || !blueScore) continue;
+
+    completedHoles++;
+
+    if (Number(redScore) < Number(blueScore)) {
+      redWins++;
+    } else if (Number(blueScore) < Number(redScore)) {
+      blueWins++;
     }
+  }
 
-    function calculateTeamTotals(match) {
-      let red = 0;
-      let blue = 0;
+  const diff = Math.abs(redWins - blueWins);
+  const leader = redWins > blueWins
+    ? "Red"
+    : blueWins > redWins
+    ? "Blue"
+    : null;
 
-      Object.values(match.holes || {}).forEach(hole => {
-        if (hole?.redScore) red += Number(hole.redScore);
-        if (hole?.blueScore) blue += Number(hole.blueScore);
-      });
+  const holesRemaining = 18 - completedHoles;
 
-      return { red, blue };
-    }
+  if (!leader) {
+    return holesRemaining === 0
+      ? "Match Tied"
+      : "All Square";
+  }
+
+  if (diff > holesRemaining) {
+    return `${leader} Wins ${diff} & ${holesRemaining}`;
+  }
+
+  return `${leader} ${diff} Up with ${holesRemaining} to go`;
+}
 
     function calculateMatchStatus(match) {
       let redWins = 0;
