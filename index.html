@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Golf Tournament Manager</title>
+
   <style>
     :root {
       --bg: #0f172a;
@@ -23,7 +24,7 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #064e3b 0%, var(--bg) 220px);
+      background: linear-gradient(180deg, #064e3b 0%, var(--bg) 230px);
       color: var(--text);
       padding-bottom: 80px;
     }
@@ -59,7 +60,7 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 6px;
       padding: 10px 14px;
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
@@ -75,6 +76,7 @@
     }
 
     .tab-btn.active { background: var(--green); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
 
     section { display: none; }
     section.active { display: block; }
@@ -88,9 +90,7 @@
       box-shadow: 0 12px 30px rgba(0,0,0,0.18);
     }
 
-    .card h2, .card h3 {
-      margin-top: 0;
-    }
+    .card h2, .card h3 { margin-top: 0; }
 
     label {
       display: block;
@@ -110,11 +110,7 @@
       font-size: 16px;
     }
 
-    .grid {
-      display: grid;
-      gap: 10px;
-    }
-
+    .grid { display: grid; gap: 10px; }
     .grid.two { grid-template-columns: repeat(2, 1fr); }
     .grid.four { grid-template-columns: repeat(4, 1fr); }
 
@@ -139,6 +135,18 @@
     }
 
     .muted { color: var(--muted); }
+    .small { font-size: 12px; color: var(--muted); }
+
+    .status {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.18);
+      border: 1px solid rgba(22, 163, 74, 0.35);
+      font-size: 12px;
+      color: #bbf7d0;
+    }
 
     .match-header {
       display: flex;
@@ -180,14 +188,9 @@
       font-size: 13px;
     }
 
-    .hole-btn.redWin { background: rgba(220, 38, 38, 0.35); }
-    .hole-btn.blueWin { background: rgba(37, 99, 235, 0.35); }
-    .hole-btn.tie { background: rgba(245, 158, 11, 0.35); }
-
-    .small {
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .hole-btn.redWin { background: rgba(220, 38, 38, 0.42); }
+    .hole-btn.blueWin { background: rgba(37, 99, 235, 0.42); }
+    .hole-btn.tie { background: rgba(245, 158, 11, 0.38); color: #111827; }
 
     @media (max-width: 640px) {
       header h1 { font-size: 24px; }
@@ -202,13 +205,14 @@
   <header>
     <h1>Golf Tournament Manager</h1>
     <p>Create tournaments, add players, build 2v2 matches, and score best ball.</p>
+    <span id="connectionStatus" class="status">Connecting to Firebase...</span>
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" onclick="showTab('tournaments')">Tournaments</button>
-    <button class="tab-btn" onclick="showTab('players')">Players</button>
-    <button class="tab-btn" onclick="showTab('matches')">Matches</button>
-    <button class="tab-btn" onclick="showTab('scoreboard')">Scoreboard</button>
+    <button class="tab-btn active" onclick="showTab(event, 'tournaments')">Tournaments</button>
+    <button class="tab-btn" onclick="showTab(event, 'players')">Players</button>
+    <button class="tab-btn" onclick="showTab(event, 'matches')">Matches</button>
+    <button class="tab-btn" onclick="showTab(event, 'scoreboard')">Scoreboard</button>
   </nav>
 
   <main class="container">
@@ -217,19 +221,22 @@
         <h2>Create New Tournament</h2>
         <label>Tournament Name</label>
         <input id="tournamentName" placeholder="Spring Classic 2026" />
+
         <label>Date</label>
         <input id="tournamentDate" type="date" />
+
         <div class="btn-row">
           <button class="primary" onclick="createTournament()">Create Tournament</button>
-          <button class="danger" onclick="resetAllData()">Reset All Data</button>
         </div>
       </div>
+
       <div class="card">
         <h2>Current Tournament</h2>
         <div id="currentTournamentBox" class="muted">No tournament selected.</div>
       </div>
+
       <div class="card">
-        <h2>Past / Saved Tournaments</h2>
+        <h2>Saved Tournaments</h2>
         <div id="tournamentList"></div>
       </div>
     </section>
@@ -239,16 +246,19 @@
         <h2>Add Player</h2>
         <label>Player Name</label>
         <input id="playerName" placeholder="Player name" />
+
         <label>Team</label>
         <select id="playerTeam">
           <option value="Red">Red Team</option>
           <option value="Blue">Blue Team</option>
           <option value="Unassigned">Unassigned</option>
         </select>
+
         <div class="btn-row">
           <button class="primary" onclick="addPlayer()">Add Player</button>
         </div>
       </div>
+
       <div class="card">
         <h2>Players</h2>
         <div id="playerList"></div>
@@ -276,12 +286,15 @@
             <select id="blue2"></select>
           </div>
         </div>
-        <label>Starting Hole / Notes</label>
+
+        <label>Match Notes</label>
         <input id="matchNotes" placeholder="Front 9, Back 9, Match 1, etc." />
+
         <div class="btn-row">
           <button class="primary" onclick="createMatch()">Create Match</button>
         </div>
       </div>
+
       <div class="card">
         <h2>Matches</h2>
         <div id="matchList"></div>
@@ -296,281 +309,397 @@
     </section>
   </main>
 
-  <script>
-    const STORAGE_KEY = 'golfTournamentManager_v1';
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      set,
+      update,
+      remove,
+      onValue,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-    let app = loadData();
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY_HERE",
+      authDomain: "golftournament-44a54.firebaseapp.com",
+      databaseURL: "https://golftournament-44a54-default-rtdb.firebaseio.com",
+      projectId: "golftournament-44a54",
+      storageBucket: "golftournament-44a54.firebasestorage.app",
+      messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
+      appId: "PASTE_YOUR_APP_ID_HERE"
+    };
 
-    function loadData() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-      return {
-        currentTournamentId: null,
-        tournaments: []
-      };
-    }
+    const firebaseApp = initializeApp(firebaseConfig);
+    const db = getDatabase(firebaseApp);
 
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(app));
+    let tournaments = {};
+    let currentTournamentId = localStorage.getItem("currentTournamentId") || null;
+
+    const connectionStatus = document.getElementById("connectionStatus");
+
+    onValue(ref(db, ".info/connected"), snapshot => {
+      connectionStatus.textContent = snapshot.val() ? "Connected to Firebase" : "Disconnected";
+    });
+
+    onValue(ref(db, "tournaments"), snapshot => {
+      tournaments = snapshot.val() || {};
+
+      if (currentTournamentId && !tournaments[currentTournamentId]) {
+        currentTournamentId = null;
+        localStorage.removeItem("currentTournamentId");
+      }
+
       render();
-    }
+    });
 
     function getCurrentTournament() {
-      return app.tournaments.find(t => t.id === app.currentTournamentId) || null;
+      if (!currentTournamentId) return null;
+      return tournaments[currentTournamentId] || null;
     }
 
-    function uid() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    function getTournamentArray() {
+      return Object.entries(tournaments).map(([id, tournament]) => ({
+        id,
+        ...tournament,
+        players: tournament.players || {},
+        matches: tournament.matches || {}
+      })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     }
 
-    function showTab(id) {
-      document.querySelectorAll('section').forEach(section => section.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      event.target.classList.add('active');
+    function getPlayersArray(tournament) {
+      if (!tournament || !tournament.players) return [];
+      return Object.entries(tournament.players).map(([id, player]) => ({ id, ...player }));
     }
 
-    function createTournament() {
-      const name = document.getElementById('tournamentName').value.trim();
-      const date = document.getElementById('tournamentDate').value;
-      if (!name) return alert('Enter a tournament name.');
+    function getMatchesArray(tournament) {
+      if (!tournament || !tournament.matches) return [];
+      return Object.entries(tournament.matches).map(([id, match]) => ({ id, ...match }));
+    }
 
-      const tournament = {
-        id: uid(),
+    window.showTab = function(event, id) {
+      document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      event.target.classList.add("active");
+    };
+
+    window.createTournament = async function() {
+      const name = document.getElementById("tournamentName").value.trim();
+      const date = document.getElementById("tournamentDate").value;
+
+      if (!name) return alert("Enter a tournament name.");
+
+      const newRef = push(ref(db, "tournaments"));
+
+      await set(newRef, {
         name,
         date,
-        players: [],
-        matches: [],
-        createdAt: new Date().toISOString()
-      };
+        createdAt: Date.now()
+      });
 
-      app.tournaments.unshift(tournament);
-      app.currentTournamentId = tournament.id;
-      document.getElementById('tournamentName').value = '';
-      document.getElementById('tournamentDate').value = '';
-      saveData();
-    }
+      currentTournamentId = newRef.key;
+      localStorage.setItem("currentTournamentId", currentTournamentId);
 
-    function selectTournament(id) {
-      app.currentTournamentId = id;
-      saveData();
-    }
+      document.getElementById("tournamentName").value = "";
+      document.getElementById("tournamentDate").value = "";
+    };
 
-    function addPlayer() {
+    window.selectTournament = function(id) {
+      currentTournamentId = id;
+      localStorage.setItem("currentTournamentId", id);
+      render();
+    };
+
+    window.deleteTournament = async function(id) {
+      if (!confirm("Delete this tournament and all players/matches?")) return;
+      await remove(ref(db, `tournaments/${id}`));
+
+      if (currentTournamentId === id) {
+        currentTournamentId = null;
+        localStorage.removeItem("currentTournamentId");
+      }
+    };
+
+    window.addPlayer = async function() {
       const tournament = getCurrentTournament();
-      if (!tournament) return alert('Create or select a tournament first.');
+      if (!tournament) return alert("Create or select a tournament first.");
 
-      const name = document.getElementById('playerName').value.trim();
-      const team = document.getElementById('playerTeam').value;
-      if (!name) return alert('Enter a player name.');
+      const name = document.getElementById("playerName").value.trim();
+      const team = document.getElementById("playerTeam").value;
 
-      tournament.players.push({ id: uid(), name, team });
-      document.getElementById('playerName').value = '';
-      saveData();
-    }
+      if (!name) return alert("Enter a player name.");
 
-    function deletePlayer(id) {
+      const newPlayerRef = push(ref(db, `tournaments/${currentTournamentId}/players`));
+
+      await set(newPlayerRef, {
+        name,
+        team,
+        createdAt: Date.now()
+      });
+
+      document.getElementById("playerName").value = "";
+    };
+
+    window.deletePlayer = async function(playerId) {
       const tournament = getCurrentTournament();
-      tournament.players = tournament.players.filter(p => p.id !== id);
-      tournament.matches = tournament.matches.filter(m => !m.players.includes(id));
-      saveData();
-    }
+      if (!tournament) return;
 
-    function createMatch() {
+      const matches = getMatchesArray(tournament);
+      const playerIsInMatch = matches.some(match => {
+        const allPlayers = [...(match.red || []), ...(match.blue || [])];
+        return allPlayers.includes(playerId);
+      });
+
+      if (playerIsInMatch) {
+        alert("This player is already in a match. Delete the match first.");
+        return;
+      }
+
+      await remove(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`));
+    };
+
+    window.createMatch = async function() {
       const tournament = getCurrentTournament();
-      if (!tournament) return alert('Create or select a tournament first.');
+      if (!tournament) return alert("Create or select a tournament first.");
 
-      const ids = ['red1', 'red2', 'blue1', 'blue2'].map(x => document.getElementById(x).value);
-      if (ids.some(x => !x)) return alert('Select all 4 players.');
-      if (new Set(ids).size !== 4) return alert('Each player can only be selected once in a match.');
+      const red1 = document.getElementById("red1").value;
+      const red2 = document.getElementById("red2").value;
+      const blue1 = document.getElementById("blue1").value;
+      const blue2 = document.getElementById("blue2").value;
+      const selectedPlayers = [red1, red2, blue1, blue2];
 
-      const match = {
-        id: uid(),
-        players: ids,
-        red: [ids[0], ids[1]],
-        blue: [ids[2], ids[3]],
-        notes: document.getElementById('matchNotes').value.trim(),
-        holes: Array.from({ length: 18 }, (_, i) => ({ hole: i + 1, result: null }))
-      };
+      if (selectedPlayers.some(id => !id)) return alert("Select all 4 players.");
+      if (new Set(selectedPlayers).size !== 4) return alert("Each player can only be selected once in a match.");
 
-      tournament.matches.push(match);
-      document.getElementById('matchNotes').value = '';
-      saveData();
-    }
+      const newMatchRef = push(ref(db, `tournaments/${currentTournamentId}/matches`));
 
-    function deleteMatch(id) {
+      const holes = {};
+      for (let i = 1; i <= 18; i++) {
+        holes[i] = "";
+      }
+
+      await set(newMatchRef, {
+        red: [red1, red2],
+        blue: [blue1, blue2],
+        notes: document.getElementById("matchNotes").value.trim(),
+        holes,
+        createdAt: Date.now()
+      });
+
+      document.getElementById("matchNotes").value = "";
+    };
+
+    window.deleteMatch = async function(matchId) {
+      if (!confirm("Delete this match?")) return;
+      await remove(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}`));
+    };
+
+    window.cycleHole = async function(matchId, holeNumber) {
       const tournament = getCurrentTournament();
-      tournament.matches = tournament.matches.filter(m => m.id !== id);
-      saveData();
-    }
+      const match = tournament?.matches?.[matchId];
+      if (!match) return;
 
-    function setHoleResult(matchId, holeNumber, result) {
-      const tournament = getCurrentTournament();
-      const match = tournament.matches.find(m => m.id === matchId);
-      const hole = match.holes.find(h => h.hole === holeNumber);
-      hole.result = hole.result === result ? null : result;
-      saveData();
-    }
+      const current = match.holes?.[holeNumber] || "";
+      const order = ["", "red", "blue", "tie"];
+      const next = order[(order.indexOf(current) + 1) % order.length];
+
+      await set(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}/holes/${holeNumber}`), next);
+    };
 
     function calculateMatchScore(match) {
       let redWins = 0;
       let blueWins = 0;
 
-      match.holes.forEach(h => {
-        if (h.result === 'red') redWins++;
-        if (h.result === 'blue') blueWins++;
+      const holes = match.holes || {};
+      Object.values(holes).forEach(result => {
+        if (result === "red") redWins++;
+        if (result === "blue") blueWins++;
       });
 
       const diff = redWins - blueWins;
-      if (diff === 0) return 'All Square';
+      if (diff === 0) return "All Square";
       return diff > 0 ? `Red ${diff} Up` : `Blue ${Math.abs(diff)} Up`;
     }
 
-    function playerName(id) {
+    function playerName(playerId) {
       const tournament = getCurrentTournament();
-      return tournament?.players.find(p => p.id === id)?.name || 'Unknown';
+      const player = tournament?.players?.[playerId];
+      return player?.name || "Unknown";
+    }
+
+    function renderCurrentTournament() {
+      const box = document.getElementById("currentTournamentBox");
+      const tournament = getCurrentTournament();
+
+      if (!tournament) {
+        box.innerHTML = "No tournament selected.";
+        return;
+      }
+
+      const players = getPlayersArray(tournament);
+      const matches = getMatchesArray(tournament);
+
+      box.innerHTML = `
+        <strong>${escapeHtml(tournament.name)}</strong><br />
+        <span class="muted">${tournament.date || "No date"} · ${players.length} players · ${matches.length} matches</span>
+      `;
     }
 
     function renderTournamentList() {
-      const box = document.getElementById('tournamentList');
-      if (!app.tournaments.length) {
+      const box = document.getElementById("tournamentList");
+      const list = getTournamentArray();
+
+      if (!list.length) {
         box.innerHTML = '<p class="muted">No tournaments yet.</p>';
         return;
       }
 
-      box.innerHTML = app.tournaments.map(t => `
-        <div class="list-item">
-          <strong>${t.name}</strong><br />
-          <span class="muted">${t.date || 'No date'} · ${t.players.length} players · ${t.matches.length} matches</span>
-          <div class="btn-row">
-            <button class="blue" onclick="selectTournament('${t.id}')">Open</button>
-          </div>
-        </div>
-      `).join('');
-    }
+      box.innerHTML = list.map(tournament => {
+        const playerCount = Object.keys(tournament.players || {}).length;
+        const matchCount = Object.keys(tournament.matches || {}).length;
+        const activeLabel = tournament.id === currentTournamentId ? "Current" : "Open";
 
-    function renderCurrentTournament() {
-      const box = document.getElementById('currentTournamentBox');
-      const t = getCurrentTournament();
-      if (!t) {
-        box.innerHTML = 'No tournament selected.';
-        return;
-      }
-      box.innerHTML = `
-        <strong>${t.name}</strong><br />
-        <span class="muted">${t.date || 'No date'} · ${t.players.length} players · ${t.matches.length} matches</span>
-      `;
+        return `
+          <div class="list-item">
+            <strong>${escapeHtml(tournament.name)}</strong><br />
+            <span class="muted">${tournament.date || "No date"} · ${playerCount} players · ${matchCount} matches</span>
+            <div class="btn-row">
+              <button class="blue" onclick="selectTournament('${tournament.id}')">${activeLabel}</button>
+              <button class="danger" onclick="deleteTournament('${tournament.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderPlayers() {
-      const t = getCurrentTournament();
-      const box = document.getElementById('playerList');
-      if (!t || !t.players.length) {
+      const box = document.getElementById("playerList");
+      const tournament = getCurrentTournament();
+      const players = getPlayersArray(tournament);
+
+      if (!tournament) {
+        box.innerHTML = '<p class="muted">Create or select a tournament first.</p>';
+        return;
+      }
+
+      if (!players.length) {
         box.innerHTML = '<p class="muted">No players added yet.</p>';
         return;
       }
 
-      box.innerHTML = t.players.map(p => `
+      box.innerHTML = players.map(player => `
         <div class="list-item">
-          <strong>${p.name}</strong><br />
-          <span class="muted">${p.team}</span>
+          <strong>${escapeHtml(player.name)}</strong><br />
+          <span class="muted">${escapeHtml(player.team || "Unassigned")}</span>
           <div class="btn-row">
-            <button class="danger" onclick="deletePlayer('${p.id}')">Delete</button>
+            <button class="danger" onclick="deletePlayer('${player.id}')">Delete</button>
           </div>
         </div>
-      `).join('');
+      `).join("");
     }
 
     function renderPlayerDropdowns() {
-      const t = getCurrentTournament();
-      const selects = ['red1', 'red2', 'blue1', 'blue2'];
+      const tournament = getCurrentTournament();
+      const players = getPlayersArray(tournament);
+      const selects = ["red1", "red2", "blue1", "blue2"];
+
       selects.forEach(id => {
         const select = document.getElementById(id);
-        if (!select) return;
-        const currentValue = select.value;
+        const oldValue = select.value;
+
         select.innerHTML = '<option value="">Select Player</option>';
-        if (t) {
-          t.players.forEach(p => {
-            select.innerHTML += `<option value="${p.id}">${p.name} (${p.team})</option>`;
-          });
-        }
-        select.value = currentValue;
+
+        players.forEach(player => {
+          select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`;
+        });
+
+        select.value = oldValue;
       });
     }
 
     function renderMatches() {
-      const t = getCurrentTournament();
-      const box = document.getElementById('matchList');
-      const scoreboard = document.getElementById('scoreboardList');
+      const tournament = getCurrentTournament();
+      const matches = getMatchesArray(tournament);
+      const matchList = document.getElementById("matchList");
+      const scoreboardList = document.getElementById("scoreboardList");
 
-      if (!t || !t.matches.length) {
-        box.innerHTML = '<p class="muted">No matches created yet.</p>';
-        scoreboard.innerHTML = '<p class="muted">No matches created yet.</p>';
+      if (!tournament) {
+        matchList.innerHTML = '<p class="muted">Create or select a tournament first.</p>';
+        scoreboardList.innerHTML = '<p class="muted">Create or select a tournament first.</p>';
         return;
       }
 
-      const html = t.matches.map((m, index) => matchCardHtml(m, index, true)).join('');
-      const boardHtml = t.matches.map((m, index) => matchCardHtml(m, index, false)).join('');
-      box.innerHTML = html;
-      scoreboard.innerHTML = boardHtml;
+      if (!matches.length) {
+        matchList.innerHTML = '<p class="muted">No matches created yet.</p>';
+        scoreboardList.innerHTML = '<p class="muted">No matches created yet.</p>';
+        return;
+      }
+
+      matchList.innerHTML = matches.map((match, index) => matchCardHtml(match, index, true)).join("");
+      scoreboardList.innerHTML = matches.map((match, index) => matchCardHtml(match, index, false)).join("");
     }
 
-    function matchCardHtml(m, index, editable) {
+    function matchCardHtml(match, index, editable) {
+      const redNames = (match.red || []).map(playerName).join(" / ");
+      const blueNames = (match.blue || []).map(playerName).join(" / ");
+
+      let holesHtml = "";
+      for (let i = 1; i <= 18; i++) {
+        const result = match.holes?.[i] || "";
+        const className = result === "red" ? "redWin" : result === "blue" ? "blueWin" : result === "tie" ? "tie" : "";
+        const label = result ? result.toUpperCase() : "-";
+
+        holesHtml += `
+          <button class="hole-btn ${className}" ${editable ? `onclick="cycleHole('${match.id}', ${i})"` : ""}>
+            Hole ${i}<br />
+            <strong>${label}</strong>
+          </button>
+        `;
+      }
+
       return `
         <div class="card">
           <div class="match-header">
             <div>
               <h3>Match ${index + 1}</h3>
-              <div class="small">${m.notes || 'No notes'}</div>
+              <div class="small">${escapeHtml(match.notes || "No notes")}</div>
             </div>
-            <div class="score-badge">${calculateMatchScore(m)}</div>
+            <div class="score-badge">${calculateMatchScore(match)}</div>
           </div>
 
           <div class="grid two">
             <div class="team-box team-a">
               <strong>Red Team</strong><br />
-              ${m.red.map(playerName).join(' / ')}
+              ${escapeHtml(redNames)}
             </div>
             <div class="team-box team-b">
               <strong>Blue Team</strong><br />
-              ${m.blue.map(playerName).join(' / ')}
+              ${escapeHtml(blueNames)}
             </div>
           </div>
 
-          <div class="holes">
-            ${m.holes.map(h => `
-              <button class="hole-btn ${h.result === 'red' ? 'redWin' : h.result === 'blue' ? 'blueWin' : h.result === 'tie' ? 'tie' : ''}" ${editable ? `onclick="cycleHole('${m.id}', ${h.hole})"` : ''}>
-                Hole ${h.hole}<br />
-                <strong>${h.result ? h.result.toUpperCase() : '-'}</strong>
-              </button>
-            `).join('')}
-          </div>
+          <div class="holes">${holesHtml}</div>
 
           ${editable ? `
             <p class="small">Tap a hole to cycle: Red win → Blue win → Tie → blank.</p>
             <div class="btn-row">
-              <button class="danger" onclick="deleteMatch('${m.id}')">Delete Match</button>
+              <button class="danger" onclick="deleteMatch('${match.id}')">Delete Match</button>
             </div>
-          ` : ''}
+          ` : ""}
         </div>
       `;
     }
 
-    function cycleHole(matchId, holeNumber) {
-      const t = getCurrentTournament();
-      const match = t.matches.find(m => m.id === matchId);
-      const hole = match.holes.find(h => h.hole === holeNumber);
-      const order = [null, 'red', 'blue', 'tie'];
-      const next = order[(order.indexOf(hole.result) + 1) % order.length];
-      hole.result = next;
-      saveData();
-    }
-
-    function resetAllData() {
-      if (!confirm('This clears all saved tournaments from this browser. Continue?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      app = loadData();
-      render();
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function render() {
@@ -580,8 +709,6 @@
       renderPlayerDropdowns();
       renderMatches();
     }
-
-    render();
   </script>
 </body>
 </html>
