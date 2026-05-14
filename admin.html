@@ -101,13 +101,11 @@
       cursor: pointer;
     }
 
-    .green-btn {
-      background: linear-gradient(135deg, var(--green), var(--green2));
-    }
-
+    .green-btn { background: linear-gradient(135deg, var(--green), var(--green2)); }
     .red-btn { background: var(--red); }
     .blue-btn { background: var(--blue); }
     .gray-btn { background: #334155; }
+    .gold-btn { background: var(--gold); color: #111827; }
 
     .error {
       margin-top: 12px;
@@ -139,35 +137,15 @@
       color: #d1fae5;
     }
 
-    .dashboard {
-      display: none;
-    }
+    .dashboard { display: none; }
+    .dashboard.show { display: block; }
 
-    .dashboard.show {
-      display: block;
-    }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-    .grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .grid.two {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .grid.three {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .card {
-      padding: 18px;
-    }
-
-    .card h2,
-    .card h3 {
-      margin-top: 0;
-    }
+    .card { padding: 18px; }
+    .card h2, .card h3 { margin-top: 0; }
 
     label {
       display: block;
@@ -205,9 +183,7 @@
       margin-top: 10px;
     }
 
-    .list-item strong {
-      font-size: 16px;
-    }
+    .list-item strong { font-size: 16px; }
 
     .muted {
       color: var(--muted);
@@ -244,10 +220,33 @@
       letter-spacing: 1px;
     }
 
+    .hidden { display: none; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 120px;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: end;
+    }
+
+    .edit-grid label {
+      margin-top: 0;
+    }
+
     @media (max-width: 900px) {
       .grid.two,
       .grid.three,
-      .match-grid {
+      .match-grid,
+      .edit-grid {
         grid-template-columns: 1fr;
       }
 
@@ -290,7 +289,6 @@
           <h1>Tournament Admin</h1>
           <p>Manage tournaments, players, matches, and player IDs.</p>
         </div>
-
         <div class="status" id="connectionStatus">Connecting to Firebase...</div>
       </div>
 
@@ -343,8 +341,17 @@
         </div>
 
         <div class="card">
-          <h2>Players</h2>
-          <div id="playerList"></div>
+          <div class="section-header">
+            <div>
+              <h2 style="margin-bottom:4px;">Players</h2>
+              <div class="muted">Players are hidden by default.</div>
+            </div>
+            <button id="togglePlayersBtn" class="blue-btn" onclick="togglePlayers()">View Players</button>
+          </div>
+
+          <div id="playersPanel" class="hidden">
+            <div id="playerList"></div>
+          </div>
         </div>
       </div>
 
@@ -397,6 +404,7 @@
       ref,
       push,
       set,
+      update,
       remove,
       onValue
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
@@ -418,13 +426,12 @@
 
     let tournaments = {};
     let currentTournamentId = localStorage.getItem("currentTournamentId") || null;
+    let playersVisible = false;
 
     const connectionStatus = document.getElementById("connectionStatus");
 
     onValue(ref(db, ".info/connected"), snapshot => {
-      connectionStatus.textContent = snapshot.val()
-        ? "Connected to Firebase"
-        : "Disconnected";
+      connectionStatus.textContent = snapshot.val() ? "Connected to Firebase" : "Disconnected";
     });
 
     onValue(ref(db, "tournaments"), snapshot => {
@@ -471,9 +478,7 @@
     };
 
     window.loginOnEnter = function(event) {
-      if (event.key === "Enter") {
-        checkAdminCode();
-      }
+      if (event.key === "Enter") checkAdminCode();
     };
 
     window.checkAdminCode = function() {
@@ -493,14 +498,22 @@
       input.value = input.value.replace(/\D/g, "").slice(0, 4);
     };
 
+    window.cleanEditPlayerCode = function(playerId) {
+      const input = document.getElementById(`edit-code-${playerId}`);
+      input.value = input.value.replace(/\D/g, "").slice(0, 4);
+    };
+
+    window.togglePlayers = function() {
+      playersVisible = !playersVisible;
+      document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
+      document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
+    };
+
     window.createTournament = async function() {
       const name = document.getElementById("tournamentName").value.trim();
       const date = document.getElementById("tournamentDate").value;
 
-      if (!name) {
-        alert("Enter a tournament name.");
-        return;
-      }
+      if (!name) return alert("Enter a tournament name.");
 
       const newTournamentRef = push(ref(db, "tournaments"));
 
@@ -536,28 +549,16 @@
 
     window.addPlayer = async function() {
       const tournament = getCurrentTournament();
-
-      if (!tournament) {
-        alert("Create or select a tournament first.");
-        return;
-      }
+      if (!tournament) return alert("Create or select a tournament first.");
 
       const name = document.getElementById("playerName").value.trim();
       const team = document.getElementById("playerTeam").value;
       const code = document.getElementById("playerCode").value.trim();
 
-      if (!name) {
-        alert("Enter a player name.");
-        return;
-      }
-
-      if (!/^\d{4}$/.test(code)) {
-        alert("Player code must be exactly 4 digits.");
-        return;
-      }
+      if (!name) return alert("Enter a player name.");
+      if (!/^\d{4}$/.test(code)) return alert("Player code must be exactly 4 digits.");
 
       const existingPlayers = getPlayersArray(tournament);
-
       if (existingPlayers.some(player => player.code === code)) {
         alert("That player code already exists.");
         return;
@@ -574,6 +575,34 @@
 
       document.getElementById("playerName").value = "";
       document.getElementById("playerCode").value = "";
+    };
+
+    window.savePlayerEdits = async function(playerId) {
+      const tournament = getCurrentTournament();
+      if (!tournament) return;
+
+      const name = document.getElementById(`edit-name-${playerId}`).value.trim();
+      const team = document.getElementById(`edit-team-${playerId}`).value;
+      const code = document.getElementById(`edit-code-${playerId}`).value.trim();
+
+      if (!name) return alert("Player name cannot be blank.");
+      if (!/^\d{4}$/.test(code)) return alert("Player code must be exactly 4 digits.");
+
+      const players = getPlayersArray(tournament);
+      const duplicateCode = players.some(player => player.id !== playerId && player.code === code);
+
+      if (duplicateCode) {
+        alert("That player code is already being used by another player.");
+        return;
+      }
+
+      await update(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`), {
+        name,
+        team,
+        code
+      });
+
+      alert("Player updated.");
     };
 
     window.deletePlayer = async function(playerId) {
@@ -595,29 +624,17 @@
 
     window.createMatch = async function() {
       const tournament = getCurrentTournament();
-
-      if (!tournament) {
-        alert("Create or select a tournament first.");
-        return;
-      }
+      if (!tournament) return alert("Create or select a tournament first.");
 
       const red1 = document.getElementById("red1").value;
       const red2 = document.getElementById("red2").value;
       const blue1 = document.getElementById("blue1").value;
       const blue2 = document.getElementById("blue2").value;
       const matchName = document.getElementById("matchName").value.trim();
-
       const players = [red1, red2, blue1, blue2];
 
-      if (players.some(id => !id)) {
-        alert("Select all 4 players.");
-        return;
-      }
-
-      if (new Set(players).size !== 4) {
-        alert("Players can only be selected once.");
-        return;
-      }
+      if (players.some(id => !id)) return alert("Select all 4 players.");
+      if (new Set(players).size !== 4) return alert("Players can only be selected once.");
 
       const newMatchRef = push(ref(db, `tournaments/${currentTournamentId}/matches`));
 
@@ -696,7 +713,6 @@
               <button class="blue-btn" onclick="selectTournament('${tournament.id}')">
                 ${currentTournamentId === tournament.id ? "Current Tournament" : "Open"}
               </button>
-
               <button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button>
             </div>
           </div>
@@ -721,11 +737,32 @@
 
       box.innerHTML = players.map(player => `
         <div class="list-item">
-          <strong>${escapeHtml(player.name)}</strong><br />
-          <div class="muted">${escapeHtml(player.team || "Unassigned")}</div>
-          <div class="player-code">Player ID: ${escapeHtml(player.code || "----")}</div>
+          <strong>Edit Player</strong>
+          <div class="player-code">Current ID: ${escapeHtml(player.code || "----")}</div>
+
+          <div class="edit-grid">
+            <div>
+              <label>Name</label>
+              <input id="edit-name-${player.id}" value="${escapeAttribute(player.name || "")}" />
+            </div>
+
+            <div>
+              <label>Team</label>
+              <select id="edit-team-${player.id}">
+                <option value="Red" ${player.team === "Red" ? "selected" : ""}>Red Team</option>
+                <option value="Blue" ${player.team === "Blue" ? "selected" : ""}>Blue Team</option>
+                <option value="Unassigned" ${player.team === "Unassigned" ? "selected" : ""}>Unassigned</option>
+              </select>
+            </div>
+
+            <div>
+              <label>4 Digit ID</label>
+              <input id="edit-code-${player.id}" maxlength="4" inputmode="numeric" value="${escapeAttribute(player.code || "")}" oninput="cleanEditPlayerCode('${player.id}')" />
+            </div>
+          </div>
 
           <div class="button-row">
+            <button class="green-btn" onclick="savePlayerEdits('${player.id}')">Save Player</button>
             <button class="red-btn" onclick="deletePlayer('${player.id}')">Delete</button>
           </div>
         </div>
@@ -735,7 +772,6 @@
     function renderPlayerDropdowns() {
       const tournament = getCurrentTournament();
       const players = getPlayersArray(tournament);
-
       const selects = ["red1", "red2", "blue1", "blue2"];
 
       selects.forEach(id => {
@@ -793,16 +829,12 @@
             <div class="match-grid">
               <div class="team-box red-team">
                 <strong>Red Team</strong>
-                <div style="margin-top:8px; display:grid; gap:8px;">
-                  ${redPlayers}
-                </div>
+                <div style="margin-top:8px; display:grid; gap:8px;">${redPlayers}</div>
               </div>
 
               <div class="team-box blue-team">
                 <strong>Blue Team</strong>
-                <div style="margin-top:8px; display:grid; gap:8px;">
-                  ${bluePlayers}
-                </div>
+                <div style="margin-top:8px; display:grid; gap:8px;">${bluePlayers}</div>
               </div>
             </div>
 
@@ -823,12 +855,19 @@
         .replace(/'/g, "&#039;");
     }
 
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
+
     function render() {
       renderCurrentTournament();
       renderTournamentList();
       renderPlayers();
       renderPlayerDropdowns();
       renderMatches();
+
+      document.getElementById("playersPanel").classList.toggle("hidden", !playersVisible);
+      document.getElementById("togglePlayersBtn").textContent = playersVisible ? "Hide Players" : "View Players";
     }
   </script>
 </body>
