@@ -119,7 +119,7 @@
             <button class="menu-btn" onclick="toggleAdminMenu()">☰</button>
             <div id="adminMenu" class="menu-dropdown hidden">
               <a href="index.html">Home</a>
-              <a href="spectator.html">Spectator View</a>
+              <a href="#" onclick="promptSpectatorTournament(); return false;">Spectator View</a>
             </div>
           </div>
         </div>
@@ -274,7 +274,9 @@
       document.getElementById("loginError").classList.remove("show");
     };
 
-    window.loginOnEnter = function(event) { if (event.key === "Enter") checkAdminCode(); };
+    window.loginOnEnter = function(event) {
+      if (event.key === "Enter") checkAdminCode();
+    };
 
     window.checkAdminCode = function() {
       const code = document.getElementById("adminCode").value.trim();
@@ -335,6 +337,33 @@
 
     window.toggleAdminMenu = function() {
       document.getElementById("adminMenu").classList.toggle("hidden");
+    };
+
+    window.promptSpectatorTournament = function() {
+      const list = getTournamentArray();
+
+      if (!list.length) {
+        alert("No tournaments available.");
+        return;
+      }
+
+      const choices = list.map((tournament, index) => {
+        return `${index + 1} = ${tournament.name}${tournament.date ? " - " + tournament.date : ""}`;
+      }).join("\n");
+
+      const selection = prompt(`Which tournament do you want to view?\n\n${choices}`);
+
+      if (selection === null) return;
+
+      const index = Number(selection.trim()) - 1;
+
+      if (!list[index]) {
+        alert("Invalid tournament selection.");
+        return;
+      }
+
+      localStorage.setItem("currentTournamentId", list[index].id);
+      window.location.href = "spectator.html";
     };
 
     window.createTournament = async function() {
@@ -506,13 +535,19 @@
       await remove(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}`));
     };
 
-    function playerName(playerId) { return getCurrentTournament()?.players?.[playerId]?.name || "Unknown"; }
+    function playerName(playerId) {
+      return getCurrentTournament()?.players?.[playerId]?.name || "Unknown";
+    }
+
     function playerLastName(playerId) {
       const fullName = playerName(playerId).trim();
       const parts = fullName.split(/\s+/).filter(Boolean);
       return parts.length ? parts[parts.length - 1] : fullName;
     }
-    function playerCode(playerId) { return getCurrentTournament()?.players?.[playerId]?.code || "----"; }
+
+    function playerCode(playerId) {
+      return getCurrentTournament()?.players?.[playerId]?.code || "----";
+    }
 
     function teamOptionsHtml(selectedTeam) {
       return `
@@ -525,16 +560,20 @@
     function renderTournamentSelector() {
       const selector = document.getElementById("tournamentSelector");
       const list = getTournamentArray();
+
       selector.innerHTML = '<option value="">Select Tournament</option>' + list.map(tournament => `<option value="${tournament.id}" ${tournament.id === currentTournamentId ? "selected" : ""}>${escapeHtml(tournament.name)}${tournament.date ? " - " + escapeHtml(tournament.date) : ""}</option>`).join("");
 
       const box = document.getElementById("tournamentList");
+
       if (!list.length) {
         box.innerHTML = '<div class="muted" style="margin-top:10px;">No tournaments yet. Use Create New Tournament.</div>';
         return;
       }
+
       box.innerHTML = list.map(tournament => {
         const playerCount = Object.keys(tournament.players || {}).length;
         const matchCount = Object.keys(tournament.matches || {}).length;
+
         return `<div class="list-item"><strong>${escapeHtml(tournament.name)}</strong><br /><div class="muted">${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches</div><div class="button-row"><button class="blue-btn" onclick="document.getElementById('tournamentSelector').value='${tournament.id}'; selectTournamentFromDropdown();">${currentTournamentId === tournament.id ? "Viewing" : "View Settings"}</button><button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button></div></div>`;
       }).join("");
     }
@@ -543,14 +582,18 @@
       const box = document.getElementById("currentTournamentBox");
       const editBox = document.getElementById("tournamentEditBox");
       const tournament = getCurrentTournament();
+
       if (!tournament) {
         box.innerHTML = "Select a tournament above to view settings.";
         editBox.innerHTML = "";
         return;
       }
+
       const playerCount = Object.keys(tournament.players || {}).length;
       const matchCount = Object.keys(tournament.matches || {}).length;
+
       box.innerHTML = `<strong>${escapeHtml(tournament.name)}</strong><br /><div class="muted">${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches</div>`;
+
       editBox.innerHTML = `
         <label>Tournament Name</label>
         <input id="editTournamentName" value="${escapeAttribute(tournament.name || "")}" />
@@ -566,8 +609,17 @@
       const box = document.getElementById("playerList");
       const tournament = getCurrentTournament();
       const players = getPlayersArray(tournament);
-      if (!tournament) { box.innerHTML = '<div class="muted">Select a tournament first.</div>'; return; }
-      if (!players.length) { box.innerHTML = '<div class="muted">No players added yet.</div>'; return; }
+
+      if (!tournament) {
+        box.innerHTML = '<div class="muted">Select a tournament first.</div>';
+        return;
+      }
+
+      if (!players.length) {
+        box.innerHTML = '<div class="muted">No players added yet.</div>';
+        return;
+      }
+
       box.innerHTML = players.map(player => `
         <div class="list-item">
           <strong>Edit Player</strong>
@@ -592,11 +644,17 @@
     function renderPlayerDropdowns() {
       const tournament = getCurrentTournament();
       const players = getPlayersArray(tournament);
+
       ["red1", "red2", "blue1", "blue2"].forEach(id => {
         const select = document.getElementById(id);
         const oldValue = select.value;
+
         select.innerHTML = '<option value="">Select Player</option>';
-        players.forEach(player => { select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`; });
+
+        players.forEach(player => {
+          select.innerHTML += `<option value="${player.id}">${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})</option>`;
+        });
+
         select.value = oldValue;
       });
     }
@@ -605,17 +663,37 @@
       const box = document.getElementById("matchList");
       const tournament = getCurrentTournament();
       const matches = getMatchesArray(tournament);
-      if (!tournament) { box.innerHTML = '<div class="muted">Select a tournament first.</div>'; return; }
-      if (!matches.length) { box.innerHTML = '<div class="muted">No matches created yet.</div>'; return; }
+
+      if (!tournament) {
+        box.innerHTML = '<div class="muted">Select a tournament first.</div>';
+        return;
+      }
+
+      if (!matches.length) {
+        box.innerHTML = '<div class="muted">No matches created yet.</div>';
+        return;
+      }
+
       box.innerHTML = matches.map((match, index) => {
         const redPlayers = (match.red || []).map(playerId => `<div>${escapeHtml(playerName(playerId))}<br /><span class="player-code">${escapeHtml(playerCode(playerId))}</span></div>`).join("");
         const bluePlayers = (match.blue || []).map(playerId => `<div>${escapeHtml(playerName(playerId))}<br /><span class="player-code">${escapeHtml(playerCode(playerId))}</span></div>`).join("");
+
         return `<div class="list-item"><strong>${escapeHtml(match.name || `Match ${index + 1}`)}</strong><div class="match-grid"><div class="team-box red-team"><strong>${escapeHtml(redTeamName())}</strong><div style="margin-top:8px; display:grid; gap:8px;">${redPlayers}</div></div><div class="team-box blue-team"><strong>${escapeHtml(blueTeamName())}</strong><div style="margin-top:8px; display:grid; gap:8px;">${bluePlayers}</div></div></div><div class="button-row"><button class="red-btn" onclick="deleteMatch('${match.id}')">Delete Match</button></div></div>`;
       }).join("");
     }
 
-    function escapeHtml(value) { return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;"); }
-    function escapeAttribute(value) { return escapeHtml(value).replace(/`/g, "&#096;"); }
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
 
     function render() {
       renderTournamentSelector();
