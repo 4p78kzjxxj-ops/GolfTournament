@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golf Tournament Admin</title>
+
+  <style>
+    :root {
+      --bg: #08110d;
+      --card: #101c17;
+      --card2: #16251f;
+      --text: #f8fafc;
+      --muted: #a7b3ad;
+      --green: #16a34a;
+      --green2: #22c55e;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --gold: #f5c542;
+      --border: rgba(255,255,255,0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top, rgba(34, 197, 94, 0.18), transparent 28%),
+        linear-gradient(180deg, #06351f 0%, var(--bg) 40%, #020617 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 40px;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card,
+    .card {
+      background: rgba(16, 28, 23, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .login-card {
+      width: min(420px, 100%);
+      padding: 24px;
+    }
+
+    .login-card h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 34px;
+    }
+
+    .login-card p {
+      margin-top: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      min-height: 54px;
+      padding: 12px 14px;
+      font-size: 16px;
+    }
+
+    .admin-code {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 16px;
+      min-height: 54px;
+      padding: 12px 18px;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .green-btn {
+      background: linear-gradient(135deg, var(--green), var(--green2));
+    }
+
+    .red-btn { background: var(--red); }
+    .blue-btn { background: var(--blue); }
+    .gray-btn { background: #334155; }
+
+    .error {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(220, 38, 38, 0.18);
+      border: 1px solid rgba(220, 38, 38, 0.35);
+      color: #fecaca;
+      display: none;
+    }
+
+    .error.show { display: block; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(26px, 5vw, 42px);
+    }
+
+    .topbar p {
+      margin: 4px 0 0;
+      color: #d1fae5;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .dashboard.show {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card h2,
+    .card h3 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.18);
+      border: 1px solid rgba(22, 163, 74, 0.35);
+      color: #bbf7d0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .list-item {
+      background: rgba(2, 6, 23, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .list-item strong {
+      font-size: 16px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .team-box {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.8);
+    }
+
+    .red-team { border-left: 5px solid var(--red); }
+    .blue-team { border-left: 5px solid var(--blue); }
+
+    .player-code {
+      display: inline-block;
+      margin-top: 6px;
+      background: rgba(245, 197, 66, 0.15);
+      color: #fde68a;
+      border: 1px solid rgba(245, 197, 66, 0.25);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 900px) {
+      .grid.two,
+      .grid.three,
+      .match-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen page">
+    <div class="login-card">
+      <h1>Admin Access</h1>
+      <p>Enter the admin code to manage tournaments, players, and matches.</p>
+
+      <input
+        id="adminCode"
+        class="admin-code"
+        type="password"
+        maxlength="4"
+        inputmode="numeric"
+        placeholder="0000"
+        oninput="cleanCode()"
+        onkeydown="loginOnEnter(event)"
+      />
+
+      <div class="button-row">
+        <button class="green-btn" style="width:100%" onclick="checkAdminCode()">Enter Admin Panel</button>
+      </div>
+
+      <div id="loginError" class="error">Incorrect admin code.</div>
+    </div>
+  </div>
+
+  <main id="dashboard" class="dashboard">
+    <div class="page">
+      <div class="topbar">
+        <div>
+          <h1>Tournament Admin</h1>
+          <p>Manage tournaments, players, matches, and player IDs.</p>
+        </div>
+
+        <div class="status" id="connectionStatus">Connecting to Firebase...</div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <h2>Create Tournament</h2>
+
+          <label>Tournament Name</label>
+          <input id="tournamentName" placeholder="Spring Classic 2026" />
+
+          <label>Date</label>
+          <input id="tournamentDate" type="date" />
+
+          <div class="button-row">
+            <button class="green-btn" onclick="createTournament()">Create Tournament</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Current Tournament</h2>
+          <div id="currentTournamentBox" class="muted">No tournament selected.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Saved Tournaments</h2>
+        <div id="tournamentList"></div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <h2>Add Player</h2>
+
+          <label>Player Name</label>
+          <input id="playerName" placeholder="Player Name" />
+
+          <label>Team</label>
+          <select id="playerTeam">
+            <option value="Red">Red Team</option>
+            <option value="Blue">Blue Team</option>
+            <option value="Unassigned">Unassigned</option>
+          </select>
+
+          <label>4 Digit Player Code</label>
+          <input id="playerCode" maxlength="4" inputmode="numeric" placeholder="1234" oninput="cleanPlayerCode()" />
+
+          <div class="button-row">
+            <button class="green-btn" onclick="addPlayer()">Add Player</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Players</h2>
+          <div id="playerList"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Create Match</h2>
+
+        <div class="grid three">
+          <div>
+            <label>Red Player 1</label>
+            <select id="red1"></select>
+          </div>
+
+          <div>
+            <label>Red Player 2</label>
+            <select id="red2"></select>
+          </div>
+
+          <div>
+            <label>Blue Player 1</label>
+            <select id="blue1"></select>
+          </div>
+
+          <div>
+            <label>Blue Player 2</label>
+            <select id="blue2"></select>
+          </div>
+
+          <div>
+            <label>Match Name</label>
+            <input id="matchName" placeholder="Match 1" />
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="green-btn" onclick="createMatch()">Create Match</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Matches</h2>
+        <div id="matchList"></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      set,
+      remove,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+    const ADMIN_CODE = "9999";
+
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY_HERE",
+      authDomain: "golftournament-44a54.firebaseapp.com",
+      databaseURL: "https://golftournament-44a54-default-rtdb.firebaseio.com",
+      projectId: "golftournament-44a54",
+      storageBucket: "golftournament-44a54.firebasestorage.app",
+      messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
+      appId: "PASTE_YOUR_APP_ID_HERE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let tournaments = {};
+    let currentTournamentId = localStorage.getItem("currentTournamentId") || null;
+
+    const connectionStatus = document.getElementById("connectionStatus");
+
+    onValue(ref(db, ".info/connected"), snapshot => {
+      connectionStatus.textContent = snapshot.val()
+        ? "Connected to Firebase"
+        : "Disconnected";
+    });
+
+    onValue(ref(db, "tournaments"), snapshot => {
+      tournaments = snapshot.val() || {};
+
+      if (currentTournamentId && !tournaments[currentTournamentId]) {
+        currentTournamentId = null;
+        localStorage.removeItem("currentTournamentId");
+      }
+
+      render();
+    });
+
+    function getCurrentTournament() {
+      if (!currentTournamentId) return null;
+      return tournaments[currentTournamentId] || null;
+    }
+
+    function getTournamentArray() {
+      return Object.entries(tournaments)
+        .map(([id, tournament]) => ({
+          id,
+          ...tournament,
+          players: tournament.players || {},
+          matches: tournament.matches || {}
+        }))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }
+
+    function getPlayersArray(tournament) {
+      if (!tournament || !tournament.players) return [];
+      return Object.entries(tournament.players).map(([id, player]) => ({ id, ...player }));
+    }
+
+    function getMatchesArray(tournament) {
+      if (!tournament || !tournament.matches) return [];
+      return Object.entries(tournament.matches).map(([id, match]) => ({ id, ...match }));
+    }
+
+    window.cleanCode = function() {
+      const input = document.getElementById("adminCode");
+      input.value = input.value.replace(/\D/g, "").slice(0, 4);
+      document.getElementById("loginError").classList.remove("show");
+    };
+
+    window.loginOnEnter = function(event) {
+      if (event.key === "Enter") {
+        checkAdminCode();
+      }
+    };
+
+    window.checkAdminCode = function() {
+      const code = document.getElementById("adminCode").value.trim();
+
+      if (code !== ADMIN_CODE) {
+        document.getElementById("loginError").classList.add("show");
+        return;
+      }
+
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("dashboard").classList.add("show");
+    };
+
+    window.cleanPlayerCode = function() {
+      const input = document.getElementById("playerCode");
+      input.value = input.value.replace(/\D/g, "").slice(0, 4);
+    };
+
+    window.createTournament = async function() {
+      const name = document.getElementById("tournamentName").value.trim();
+      const date = document.getElementById("tournamentDate").value;
+
+      if (!name) {
+        alert("Enter a tournament name.");
+        return;
+      }
+
+      const newTournamentRef = push(ref(db, "tournaments"));
+
+      await set(newTournamentRef, {
+        name,
+        date,
+        createdAt: Date.now()
+      });
+
+      currentTournamentId = newTournamentRef.key;
+      localStorage.setItem("currentTournamentId", currentTournamentId);
+
+      document.getElementById("tournamentName").value = "";
+      document.getElementById("tournamentDate").value = "";
+    };
+
+    window.selectTournament = function(id) {
+      currentTournamentId = id;
+      localStorage.setItem("currentTournamentId", id);
+      render();
+    };
+
+    window.deleteTournament = async function(id) {
+      if (!confirm("Delete this tournament?")) return;
+
+      await remove(ref(db, `tournaments/${id}`));
+
+      if (currentTournamentId === id) {
+        currentTournamentId = null;
+        localStorage.removeItem("currentTournamentId");
+      }
+    };
+
+    window.addPlayer = async function() {
+      const tournament = getCurrentTournament();
+
+      if (!tournament) {
+        alert("Create or select a tournament first.");
+        return;
+      }
+
+      const name = document.getElementById("playerName").value.trim();
+      const team = document.getElementById("playerTeam").value;
+      const code = document.getElementById("playerCode").value.trim();
+
+      if (!name) {
+        alert("Enter a player name.");
+        return;
+      }
+
+      if (!/^\d{4}$/.test(code)) {
+        alert("Player code must be exactly 4 digits.");
+        return;
+      }
+
+      const existingPlayers = getPlayersArray(tournament);
+
+      if (existingPlayers.some(player => player.code === code)) {
+        alert("That player code already exists.");
+        return;
+      }
+
+      const newPlayerRef = push(ref(db, `tournaments/${currentTournamentId}/players`));
+
+      await set(newPlayerRef, {
+        name,
+        team,
+        code,
+        createdAt: Date.now()
+      });
+
+      document.getElementById("playerName").value = "";
+      document.getElementById("playerCode").value = "";
+    };
+
+    window.deletePlayer = async function(playerId) {
+      const tournament = getCurrentTournament();
+      const matches = getMatchesArray(tournament);
+
+      const inMatch = matches.some(match => {
+        const ids = [...(match.red || []), ...(match.blue || [])];
+        return ids.includes(playerId);
+      });
+
+      if (inMatch) {
+        alert("Player is already in a match. Delete the match first.");
+        return;
+      }
+
+      await remove(ref(db, `tournaments/${currentTournamentId}/players/${playerId}`));
+    };
+
+    window.createMatch = async function() {
+      const tournament = getCurrentTournament();
+
+      if (!tournament) {
+        alert("Create or select a tournament first.");
+        return;
+      }
+
+      const red1 = document.getElementById("red1").value;
+      const red2 = document.getElementById("red2").value;
+      const blue1 = document.getElementById("blue1").value;
+      const blue2 = document.getElementById("blue2").value;
+      const matchName = document.getElementById("matchName").value.trim();
+
+      const players = [red1, red2, blue1, blue2];
+
+      if (players.some(id => !id)) {
+        alert("Select all 4 players.");
+        return;
+      }
+
+      if (new Set(players).size !== 4) {
+        alert("Players can only be selected once.");
+        return;
+      }
+
+      const newMatchRef = push(ref(db, `tournaments/${currentTournamentId}/matches`));
+
+      const holes = {};
+      for (let i = 1; i <= 18; i++) {
+        holes[i] = "";
+      }
+
+      await set(newMatchRef, {
+        name: matchName || "Match",
+        red: [red1, red2],
+        blue: [blue1, blue2],
+        holes,
+        createdAt: Date.now()
+      });
+
+      document.getElementById("matchName").value = "";
+    };
+
+    window.deleteMatch = async function(matchId) {
+      if (!confirm("Delete this match?")) return;
+      await remove(ref(db, `tournaments/${currentTournamentId}/matches/${matchId}`));
+    };
+
+    function playerName(playerId) {
+      const tournament = getCurrentTournament();
+      return tournament?.players?.[playerId]?.name || "Unknown";
+    }
+
+    function playerCode(playerId) {
+      const tournament = getCurrentTournament();
+      return tournament?.players?.[playerId]?.code || "----";
+    }
+
+    function renderCurrentTournament() {
+      const box = document.getElementById("currentTournamentBox");
+      const tournament = getCurrentTournament();
+
+      if (!tournament) {
+        box.innerHTML = "No tournament selected.";
+        return;
+      }
+
+      const playerCount = Object.keys(tournament.players || {}).length;
+      const matchCount = Object.keys(tournament.matches || {}).length;
+
+      box.innerHTML = `
+        <strong>${escapeHtml(tournament.name)}</strong><br />
+        <div class="muted">
+          ${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches
+        </div>
+      `;
+    }
+
+    function renderTournamentList() {
+      const box = document.getElementById("tournamentList");
+      const tournaments = getTournamentArray();
+
+      if (!tournaments.length) {
+        box.innerHTML = '<div class="muted">No tournaments yet.</div>';
+        return;
+      }
+
+      box.innerHTML = tournaments.map(tournament => {
+        const playerCount = Object.keys(tournament.players || {}).length;
+        const matchCount = Object.keys(tournament.matches || {}).length;
+
+        return `
+          <div class="list-item">
+            <strong>${escapeHtml(tournament.name)}</strong><br />
+            <div class="muted">
+              ${escapeHtml(tournament.date || "No date")} · ${playerCount} players · ${matchCount} matches
+            </div>
+
+            <div class="button-row">
+              <button class="blue-btn" onclick="selectTournament('${tournament.id}')">
+                ${currentTournamentId === tournament.id ? "Current Tournament" : "Open"}
+              </button>
+
+              <button class="red-btn" onclick="deleteTournament('${tournament.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderPlayers() {
+      const box = document.getElementById("playerList");
+      const tournament = getCurrentTournament();
+      const players = getPlayersArray(tournament);
+
+      if (!tournament) {
+        box.innerHTML = '<div class="muted">Create or select a tournament first.</div>';
+        return;
+      }
+
+      if (!players.length) {
+        box.innerHTML = '<div class="muted">No players added yet.</div>';
+        return;
+      }
+
+      box.innerHTML = players.map(player => `
+        <div class="list-item">
+          <strong>${escapeHtml(player.name)}</strong><br />
+          <div class="muted">${escapeHtml(player.team || "Unassigned")}</div>
+          <div class="player-code">Player ID: ${escapeHtml(player.code || "----")}</div>
+
+          <div class="button-row">
+            <button class="red-btn" onclick="deletePlayer('${player.id}')">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderPlayerDropdowns() {
+      const tournament = getCurrentTournament();
+      const players = getPlayersArray(tournament);
+
+      const selects = ["red1", "red2", "blue1", "blue2"];
+
+      selects.forEach(id => {
+        const select = document.getElementById(id);
+        const oldValue = select.value;
+
+        select.innerHTML = '<option value="">Select Player</option>';
+
+        players.forEach(player => {
+          select.innerHTML += `
+            <option value="${player.id}">
+              ${escapeHtml(player.name)} (${escapeHtml(player.team || "Unassigned")})
+            </option>
+          `;
+        });
+
+        select.value = oldValue;
+      });
+    }
+
+    function renderMatches() {
+      const box = document.getElementById("matchList");
+      const tournament = getCurrentTournament();
+      const matches = getMatchesArray(tournament);
+
+      if (!tournament) {
+        box.innerHTML = '<div class="muted">Create or select a tournament first.</div>';
+        return;
+      }
+
+      if (!matches.length) {
+        box.innerHTML = '<div class="muted">No matches created yet.</div>';
+        return;
+      }
+
+      box.innerHTML = matches.map((match, index) => {
+        const redPlayers = (match.red || []).map(playerId => `
+          <div>
+            ${escapeHtml(playerName(playerId))}<br />
+            <span class="player-code">${escapeHtml(playerCode(playerId))}</span>
+          </div>
+        `).join("");
+
+        const bluePlayers = (match.blue || []).map(playerId => `
+          <div>
+            ${escapeHtml(playerName(playerId))}<br />
+            <span class="player-code">${escapeHtml(playerCode(playerId))}</span>
+          </div>
+        `).join("");
+
+        return `
+          <div class="list-item">
+            <strong>${escapeHtml(match.name || `Match ${index + 1}`)}</strong>
+
+            <div class="match-grid">
+              <div class="team-box red-team">
+                <strong>Red Team</strong>
+                <div style="margin-top:8px; display:grid; gap:8px;">
+                  ${redPlayers}
+                </div>
+              </div>
+
+              <div class="team-box blue-team">
+                <strong>Blue Team</strong>
+                <div style="margin-top:8px; display:grid; gap:8px;">
+                  ${bluePlayers}
+                </div>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button class="red-btn" onclick="deleteMatch('${match.id}')">Delete Match</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function render() {
+      renderCurrentTournament();
+      renderTournamentList();
+      renderPlayers();
+      renderPlayerDropdowns();
+      renderMatches();
+    }
+  </script>
+</body>
+</html>
