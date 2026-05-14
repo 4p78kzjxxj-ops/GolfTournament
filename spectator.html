@@ -116,6 +116,24 @@
       white-space: nowrap;
     }
 
+    .score-red {
+      background: rgba(220, 38, 38, 0.22);
+      border-color: rgba(220, 38, 38, 0.5);
+      color: #fecaca;
+    }
+
+    .score-blue {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: rgba(37, 99, 235, 0.5);
+      color: #bfdbfe;
+    }
+
+    .score-tie {
+      background: rgba(245, 197, 66, 0.14);
+      border-color: rgba(245, 197, 66, 0.26);
+      color: #fde68a;
+    }
+
     .team-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -340,6 +358,7 @@
       <div id="connectionStatus" class="status">Connecting...</div>
     </div>
 
+    <div id="tournamentScore"></div>
     <div id="content"></div>
   </main>
 
@@ -364,6 +383,7 @@
     const tournamentId = params.get("tournamentId") || "";
 
     const content = document.getElementById("content");
+    const tournamentScore = document.getElementById("tournamentScore");
     const subtitle = document.getElementById("subtitle");
     const connectionStatus = document.getElementById("connectionStatus");
 
@@ -403,6 +423,8 @@
         return;
       }
 
+      renderTournamentSummary(matches);
+
       content.innerHTML = `
         <div class="matches">
           ${matches.map((match, index) => renderMatch(match, index)).join("")}
@@ -424,7 +446,7 @@
               <div class="match-title">${escapeHtml(match.name || `Match ${index + 1}`)}</div>
               <div class="match-subtitle">2v2 Best Ball</div>
             </div>
-            <div class="score-badge">${escapeHtml(calculateMatchStatus(match))}</div>
+            <div class="score-badge ${calculateMatchLeaderClass(match)}">${escapeHtml(calculateMatchStatus(match))}</div>
           </div>
 
           <div class="team-grid">
@@ -491,6 +513,63 @@
       }
 
       return html;
+    }
+
+    function renderTournamentSummary(matches) {
+      let redWins = 0;
+      let blueWins = 0;
+
+      matches.forEach(match => {
+        const winner = calculateMatchWinner(match);
+        if (winner === 'red') redWins++;
+        if (winner === 'blue') blueWins++;
+      });
+
+      let summaryClass = 'score-tie';
+      let summaryText = `Tournament All Square • ${redWins}-${blueWins}`;
+
+      if (redWins > blueWins) {
+        summaryClass = 'score-red';
+        summaryText = `Red Teams Lead Matches ${redWins}-${blueWins}`;
+      } else if (blueWins > redWins) {
+        summaryClass = 'score-blue';
+        summaryText = `Blue Teams Lead Matches ${blueWins}-${redWins}`;
+      }
+
+      tournamentScore.innerHTML = `
+        <div class="match-card" style="padding:10px 12px; margin-bottom:10px;">
+          <div class="score-badge ${summaryClass}" style="width:100%; justify-content:center; display:flex; font-size:15px; padding:10px;">
+            ${escapeHtml(summaryText)}
+          </div>
+        </div>
+      `;
+    }
+
+    function calculateMatchWinner(match) {
+      let redWins = 0;
+      let blueWins = 0;
+
+      Object.values(match.holes || {}).forEach(hole => {
+        const redScore = hole?.redScore;
+        const blueScore = hole?.blueScore;
+
+        if (!redScore || !blueScore) return;
+
+        if (Number(redScore) < Number(blueScore)) redWins++;
+        if (Number(blueScore) < Number(redScore)) blueWins++;
+      });
+
+      if (redWins > blueWins) return 'red';
+      if (blueWins > redWins) return 'blue';
+      return 'tie';
+    }
+
+    function calculateMatchLeaderClass(match) {
+      const winner = calculateMatchWinner(match);
+
+      if (winner === 'red') return 'score-red';
+      if (winner === 'blue') return 'score-blue';
+      return 'score-tie';
     }
 
     function calculateTeamTotals(match) {
